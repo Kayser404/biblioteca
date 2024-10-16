@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Registro de Usuario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="registroForm" (ngSubmit)="registrarUsuario()">
+
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="email" formControlName="email"></ion-input>
+    </ion-item>
+    <div *ngIf="registroForm.get('email')?.invalid && (registroForm.get('email')?.touched || registroForm.get('email')?.dirty)">
+      <ion-text color="danger">Email inválido</ion-text>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating">Contraseña</ion-label>
+      <ion-input type="password" formControlName="password"></ion-input>
+    </ion-item>
+    <div *ngIf="registroForm.get('password')?.invalid && (registroForm.get('password')?.touched || registroForm.get('password')?.dirty)">
+      <ion-text color="danger">La contraseña debe tener al menos 6 caracteres</ion-text>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating">Nombre de Usuario</ion-label>
+      <ion-input type="text" formControlName="nombreUsuario"></ion-input>
+    </ion-item>
+    <div *ngIf="registroForm.get('nombreUsuario')?.invalid && (registroForm.get('nombreUsuario')?.touched || registroForm.get('nombreUsuario')?.dirty)">
+      <ion-text color="danger">El nombre de usuario es requerido</ion-text>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating">Apellido</ion-label>
+      <ion-input type="text" formControlName="apellidoUsuario"></ion-input>
+    </ion-item>
+    <div *ngIf="registroForm.get('apellidoUsuario')?.invalid && (registroForm.get('apellidoUsuario')?.touched || registroForm.get('apellidoUsuario')?.dirty)">
+      <ion-text color="danger">El apellido es requerido</ion-text>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating">Edad</ion-label>
+      <ion-input type="number" formControlName="edadUsuario"></ion-input>
+    </ion-item>
+    <div *ngIf="registroForm.get('edadUsuario')?.invalid && (registroForm.get('edadUsuario')?.touched || registroForm.get('edadUsuario')?.dirty)">
+      <ion-text color="danger">La edad debe ser un número positivo</ion-text>
+    </div>
+
+    <ion-button expand="full" type="submit" [disabled]="registroForm.invalid">Registrar</ion-button>
+
+  </form>
+</ion-content>
