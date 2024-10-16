@@ -158,16 +158,17 @@ export class DbService {
   }
   registrarUsuario(email: string, password: string, nombreUsuario: string, apellidoUsuario: string, edadUsuario: number) {
     const query = `INSERT INTO Usuario (email, password, nombreUsuario, apellidoUsuario, edadUsuario) VALUES (?, ?, ?, ?, ?)`;
-    
+  
     return this.database.executeSql(query, [email, password, nombreUsuario, apellidoUsuario, edadUsuario])
-      .then(() => {
-        // Puedes realizar alguna acción después de registrar al usuario, como actualizar la lista de usuarios
-        this.presentAlert('Usuario registrado con éxito');
+      .then((result) => {
+        // Retornamos un valor que indica éxito
+        return { success: true, result };  // puedes devolver más información si es necesario
       })
-      .catch(e => {
-        this.presentAlert('Error al registrar usuario: ' + e.message);
+      .catch((error) => {
+        // Capturamos el error y devolvemos el mensaje del error
+        return { success: false, message: error.message }; // "message" proviene de error.message
       });
-  }
+  }  
   /* ROL */
   fetchRol(): Observable<Rol[]> {
     return this.listaRol.asObservable();
