@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Registrar Publicación</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="publicacionForm" (ngSubmit)="enviar()">
+
+    <ion-item>
+      <ion-label position="floating">Título</ion-label>
+      <ion-input type="text" formControlName="titulo"></ion-input>
+    </ion-item>
+    <div
+      *ngIf="publicacionForm.get('titulo')?.invalid && (publicacionForm.get('titulo')?.touched || publicacionForm.get('titulo')?.dirty)">
+      <ion-text color="danger">El título es obligatorio</ion-text>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating">Sinopsis</ion-label>
+      <ion-textarea formControlName="sinopsis"></ion-textarea>
+    </ion-item>
+    <div
+      *ngIf="publicacionForm.get('sinopsis')?.invalid && (publicacionForm.get('sinopsis')?.touched || publicacionForm.get('sinopsis')?.dirty)">
+      <ion-text color="danger">La sinopsis es obligatoria</ion-text>
+    </div>
+
+    <ion-item>
+      <label for="file-input" class="disfras">Imagen de Portada
+        <ion-icon class="img" name="image-outline"></ion-icon>
+        <h1>Seleccione una imagen</h1>
+      </label>
+      <input (click)="takePicture()" id="file-input" formControlName="foto">
+      <ion-img class="image" [src]="publicacionForm.value.foto" *ngIf="publicacionForm.value.foto"></ion-img>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Archivo PDF</ion-label>
+      <ion-input type="text" placeholder="URL del PDF" formControlName="pdf"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Categoría</ion-label>
+      <ion-select formControlName="id_categoriaFK">
+        <ion-select-option *ngFor="let categoria of categorias" [value]="categoria.id">
+          {{ categoria.nombreCategoria }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <div
+      *ngIf="publicacionForm.get('id_categoriaFK')?.invalid && (publicacionForm.get('id_categoriaFK')?.touched || publicacionForm.get('id_categoriaFK')?.dirty)">
+      <ion-text color="danger">La categoría es obligatoria</ion-text>
+    </div>
+
+    <ion-button expand="full" type="submit" [disabled]="publicacionForm.invalid">Guardar Publicación</ion-button>
+  </form>
+</ion-content>

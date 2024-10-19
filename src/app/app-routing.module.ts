@@ -8,7 +8,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'registro-usuario',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   {
@@ -19,6 +19,11 @@ const routes: Routes = [
     path: 'login',
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   },
+  {
+    path: 'registrar-libro',
+    loadChildren: () => import('./pages/registrar-libro/registrar-libro.module').then( m => m.RegistrarLibroPageModule)
+  },
+
 
 ];
 

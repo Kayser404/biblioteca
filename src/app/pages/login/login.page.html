@@ -5,7 +5,19 @@
 </ion-header>
 
 <ion-content class="ion-padding login-background">
+  <ion-list>
+    <ion-item *ngFor="let usuario of usuarios">
+      <ion-label>
+        <h2>{{ usuario.nombreUsuario }} {{ usuario.apellidoUsuario }}</h2>
+        <p>Email: {{ usuario.email }}</p>
+        <p>Edad: {{ usuario.edadUsuario }}</p>
+        <p>Edad: {{ usuario.password }}</p>
+        
+      </ion-label>
+    </ion-item>
+  </ion-list>
   
+
   <!-- Logo relacionado con libros y cómics -->
   <div class="logo-container">
     <img src="assets/img/comic-books.png" alt="Logo Cómics" class="logo">
@@ -21,13 +33,20 @@
     <div *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)">
       <ion-text color="danger">Correo inválido</ion-text>
     </div>
+    <div *ngIf="errorMessages.email" class="error-message">
+      <ion-text color="danger">{{ errorMessages.email }}</ion-text>
+    </div>
 
     <ion-item lines="full">
       <ion-label position="floating">Contraseña</ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
-    <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)">
+    <div
+      *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)">
       <ion-text color="danger">Contraseña inválida</ion-text>
+    </div>
+    <div *ngIf="errorMessages.password" class="error-message">
+      <ion-text color="danger">{{ errorMessages.password }}</ion-text>
     </div>
 
     <ion-button expand="block" type="submit" [disabled]="loginForm.invalid" class="login-button">

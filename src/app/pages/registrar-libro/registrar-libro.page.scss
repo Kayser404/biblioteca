@@ -1,0 +1,28 @@
+ion-item {
+  --background: transparent;
+  margin-bottom: 15px;
+}
+
+ion-button {
+  margin-top: 20px;
+}
+
+ion-textarea {
+  height: 150px;
+}
+
+ion-icon.img {
+  height: 120px;
+  width: 120px;
+}
+
+.disfras{
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  padding: 20px !important;
+}
+
+#file-input {
+  display: none;
+}

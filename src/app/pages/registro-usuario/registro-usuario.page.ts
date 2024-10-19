@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DbService } from 'src/app/services/db.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-registro-usuario',
@@ -8,10 +10,8 @@ import { DbService } from 'src/app/services/db.service';
   styleUrls: ['./registro-usuario.page.scss'],
 })
 export class RegistroUsuarioPage implements OnInit {
-  
-  registroForm: FormGroup;
 
-  arregloRol: any[] = [];
+  registroForm: FormGroup;
 
   preguntasSeguridad: string[] = [
     '¿Cuál es el nombre de tu primera mascota?',
@@ -19,7 +19,7 @@ export class RegistroUsuarioPage implements OnInit {
     '¿Cuál es el nombre de tu mejor amigo?',
   ];
 
-  constructor(private fb: FormBuilder, private db: DbService) {
+  constructor(private fb: FormBuilder, private db: DbService, private router: Router) {
     // Inicializamos el formulario
     this.registroForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -28,22 +28,12 @@ export class RegistroUsuarioPage implements OnInit {
       nombreUsuario: ['', Validators.required],
       apellidoUsuario: ['', Validators.required],
       edadUsuario: ['', [Validators.required, Validators.min(0)]],
-      roles: [[], Validators.required], // Almacena los roles seleccionados como un arreglo
       pregunta: ['', Validators.required],
       respuesta: ['', Validators.required],
     }, { validator: this.passwordsMatchValidator });
   }
 
-  ngOnInit() {
-    this.db.dbState().subscribe(res => {
-      if (res) {
-        this.db.fetchRol().subscribe(item => {
-          // Filtramos el arreglo para omitir el rol de admin
-          this.arregloRol = item.filter(rol => rol.nombreRol !== 'admin');
-        });
-      }
-    });
-  }
+  ngOnInit() {}
 
   // Validador personalizado para verificar que las contraseñas coincidan
   passwordsMatchValidator(form: FormGroup) {
@@ -60,26 +50,26 @@ export class RegistroUsuarioPage implements OnInit {
     const nombreUsuario = this.registroForm.value.nombreUsuario;
     const apellidoUsuario = this.registroForm.value.apellidoUsuario;
     const edadUsuario = this.registroForm.value.edadUsuario;
-    const roles = this.registroForm.value.roles;
     const pregunta = this.registroForm.value.pregunta;
     const respuesta = this.registroForm.value.respuesta;
 
     // Si el formulario es válido, imprimir los valores
     if (this.registroForm.valid) {
-      console.log('Formulario válido, enviando los siguientes datos:');
-      console.log({
-        email,
-        password,
-        nombreUsuario,
-        apellidoUsuario,
-        edadUsuario,
-        roles,
-        pregunta,
-        respuesta,
-      });
+      console.log('Formulario válido, enviando los siguientes datos:', this.registroForm.value);
 
       // Aquí iría la lógica para enviar los datos a la base de datos
-      // this.db.registrarUsuario({ email, password, nombreUsuario, apellidoUsuario, edadUsuario}).subscribe(...);
+      this.db.registrarUsuario(email, password, nombreUsuario, apellidoUsuario, edadUsuario)
+        .then(idUsuario => {
+          return this.db.agregarPreguntaRespuesta(pregunta, respuesta, idUsuario)
+            .then(() => {
+              console.log('Registro completo');
+              this.router.navigate(['/login']);
+            });
+        })
+        .catch(error => {
+          console.error('Error al registrar el usuario:', error);
+        });
+
     } else {
       console.log('Formulario inválido');
     }

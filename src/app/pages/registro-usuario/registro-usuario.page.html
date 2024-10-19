@@ -8,63 +8,33 @@
   <form [formGroup]="registroForm" (ngSubmit)="enviar()">
 
     <ion-item>
-      <ion-label position="floating">Email</ion-label>
+      <ion-label position="floating">Correo Electrónico</ion-label>
       <ion-input type="email" formControlName="email"></ion-input>
     </ion-item>
-    <div *ngIf="registroForm.get('email')?.invalid && (registroForm.get('email')?.touched || registroForm.get('email')?.dirty)">
-      <ion-text color="danger">Email inválido</ion-text>
-    </div>
 
     <ion-item>
       <ion-label position="floating">Contraseña</ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
-    <div *ngIf="registroForm.get('password')?.invalid && (registroForm.get('password')?.touched || registroForm.get('password')?.dirty)">
-      <ion-text color="danger">La contraseña debe tener al menos 6 caracteres</ion-text>
-    </div>
 
     <ion-item>
       <ion-label position="floating">Confirmar Contraseña</ion-label>
       <ion-input type="password" formControlName="repPassword"></ion-input>
     </ion-item>
-    <div *ngIf="registroForm.get('repPassword')?.invalid && (registroForm.get('repPassword')?.touched || registroForm.get('repPassword')?.dirty)">
-      <ion-text color="danger">Las contraseñas deben coincidir</ion-text>
-    </div>
 
     <ion-item>
       <ion-label position="floating">Nombre de Usuario</ion-label>
       <ion-input type="text" formControlName="nombreUsuario"></ion-input>
     </ion-item>
-    <div *ngIf="registroForm.get('nombreUsuario')?.invalid && (registroForm.get('nombreUsuario')?.touched || registroForm.get('nombreUsuario')?.dirty)">
-      <ion-text color="danger">El nombre de usuario es requerido</ion-text>
-    </div>
 
     <ion-item>
       <ion-label position="floating">Apellido</ion-label>
       <ion-input type="text" formControlName="apellidoUsuario"></ion-input>
     </ion-item>
-    <div *ngIf="registroForm.get('apellidoUsuario')?.invalid && (registroForm.get('apellidoUsuario')?.touched || registroForm.get('apellidoUsuario')?.dirty)">
-      <ion-text color="danger">El apellido es requerido</ion-text>
-    </div>
 
     <ion-item>
       <ion-label position="floating">Edad</ion-label>
       <ion-input type="number" formControlName="edadUsuario"></ion-input>
-    </ion-item>
-    <div *ngIf="registroForm.get('edadUsuario')?.invalid && (registroForm.get('edadUsuario')?.touched || registroForm.get('edadUsuario')?.dirty)">
-      <ion-text color="danger">La edad debe ser un número positivo</ion-text>
-    </div>
-
-    <!-- Seleccion de Roles -->
-    <ion-item>
-      <ion-label>Interes</ion-label>
-      <div *ngFor="let rol of arregloRol">
-        <ion-checkbox [formControlName]="'roles'" [value]="rol.idRol"></ion-checkbox>
-        <ion-label>{{ rol.nombreRol }}</ion-label>
-      </div>
-      <div *ngIf="registroForm.get('roles')?.invalid && (registroForm.get('roles')?.touched || registroForm.get('roles')?.dirty)">
-        <ion-text color="danger">Debes seleccionar al menos un interes</ion-text>
-      </div>
     </ion-item>
 
     <!-- Preguntas de seguridad -->
@@ -84,7 +54,7 @@
     </ion-item>
     <div *ngIf="registroForm.get('respuesta')?.invalid && (registroForm.get('respuesta')?.touched || registroForm.get('respuesta')?.dirty)">
       <ion-text color="danger">La respuesta es requerida</ion-text>
-    </div
+    </div>
 
     <ion-button expand="full" type="submit" [disabled]="registroForm.invalid">Registrar</ion-button>
 
