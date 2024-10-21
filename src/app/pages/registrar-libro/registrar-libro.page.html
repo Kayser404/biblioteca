@@ -36,11 +36,15 @@
       <input (click)="takePicture()" id="file-input" formControlName="foto">
       <ion-img class="image" [src]="publicacionForm.value.foto" *ngIf="publicacionForm.value.foto"></ion-img>
     </ion-item>
-
+    
     <ion-item>
-      <ion-label position="floating">Archivo PDF</ion-label>
-      <ion-input type="text" placeholder="URL del PDF" formControlName="pdf"></ion-input>
+      <ion-label position="stacked">Archivo PDF</ion-label>
+      <input type="file" (change)="onFileSelected($event)" accept="application/pdf" />
     </ion-item>
+    <div *ngIf="selectedFile">
+      <ion-text color="primary">Archivo seleccionado: {{ selectedFile.name }}</ion-text>
+    </div>
+    
 
     <ion-item>
       <ion-label position="floating">Categoría</ion-label>

@@ -4,6 +4,8 @@ import { DbService } from 'src/app/services/db.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Router } from '@angular/router';
+import {Filesystem, Directory} from '@capacitor/filesystem';
+
 
 @Component({
   selector: 'app-registrar-libro',
@@ -13,6 +15,7 @@ import { Router } from '@angular/router';
 export class RegistrarLibroPage implements OnInit {
   publicacionForm: FormGroup;
   categorias: any[] = [];
+  selectedFile: File | null = null;
 
   constructor(private fb: FormBuilder, private db: DbService, private auth: AuthService, private router: Router) {
     this.publicacionForm = this.fb.group({
@@ -35,7 +38,53 @@ export class RegistrarLibroPage implements OnInit {
       }
     });
   }
+
   
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      this.selectedFile = file;
+      console.log('Archivo PDF seleccionado:', this.selectedFile?.name);
+    } else {
+      console.error('Por favor, selecciona un archivo PDF válido.');
+      this.selectedFile = null;
+    }
+  }
+
+  async guardarArchivoPDF(file: File): Promise<string> {
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      return new Promise((resolve, reject) => {
+        reader.onload = async () => {
+          const base64Data = reader.result as string;
+          const fileName = `${new Date().getTime()}.pdf`;
+
+          const result = await Filesystem.writeFile({
+            path: `pdfs/${fileName}`,
+            data: base64Data.split(',')[1],
+            directory: Directory.Documents,
+            recursive: true
+          });
+
+          resolve(result.uri);
+        };
+
+        reader.onerror = (error) => reject(error);
+      });
+    } catch (error) {
+      console.error('Error al guardar el archivo PDF:', error);
+      throw error;
+    }
+  }
+
+
+
+
+
+
   /* Camara */
   takePicture = async () => {
     const image2 = await Camera.getPhoto({
@@ -49,7 +98,7 @@ export class RegistrarLibroPage implements OnInit {
   };
   
   enviar() {
-    if (this.publicacionForm.valid) {
+    if (this.publicacionForm.valid && this.selectedFile) {
       const titulo = this.publicacionForm.value.titulo;
       const sinopsis = this.publicacionForm.value.sinopsis;
       const fechaPublicacion = new Date().toLocaleDateString('es-ES');
@@ -72,4 +121,9 @@ export class RegistrarLibroPage implements OnInit {
       console.log('Formulario inválido');
     }
   }
+
+
+  
+  
+
 }
