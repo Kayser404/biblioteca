@@ -34,6 +34,10 @@ const routes: Routes = [
     path: 'editar-libro',
     loadChildren: () => import('./pages/editar-libro/editar-libro.module').then( m => m.EditarLibroPageModule)
   },
+  {
+    path: 'favorito',
+    loadChildren: () => import('./pages/favorito/favorito.module').then( m => m.FavoritoPageModule)
+  },
 
 
 

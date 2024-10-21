@@ -521,6 +521,79 @@ export class DbService {
         return null;
       });
   }
+  /* Favorito */
+  fetchFavorito(): Observable<Publicacion[]> {
+    return this.listaFavorito.asObservable();
+  }
+  buscarFavorito() {
+    //retorno el resultado de la consulta
+    return this.database
+      .executeSql('SELECT * FROM Publicacion', [])
+      .then((res) => {
+        //la consulta se realizó correctamente
+        //creamos una variable para almacenar los registros del select
+        let items: Favorito[] = [];
+        //validar cuantos registros vienen en el select
+        if (res.rows.length > 0) {
+          //recorro la consulta dentro del res
+          for (var i = 0; i < res.rows.length; i++) {
+            //alamaceno los registros en items
+            items.push({
+              idFavorito: res.rows.item(i).id_favorito,
+              idUsuarioFK: res.rows.item(i).id_usuarioFK,
+              idPublicacionFK: res.rows.item(i).id_publicacionFK,
+            });
+          }
+        }
+        this.listaPublicacion.next(items as any);
+      });
+  }
+  // Método para agregar un libro a favoritos
+  agregarAFavoritos(idUsuario: any, idPublicacion: any){
+    return this.database
+      .executeSql('INSERT INTO Favorito (id_usuarioFK, id_publicacionFK) VALUES (?, ?);', [idUsuario, idPublicacion])
+      .then(() => {
+        this.buscarFavorito();
+        console.log('Libro agregado a favoritos en la base de datos.');
+        return true;
+      })
+      .catch((error) => {
+        console.error(
+          'Error al agregar el libro a favoritos en la base de datos:',
+          error
+        );
+        return false;
+      });
+  }
+  obtenerFavoritoUsuario(idUsuario: any): Promise<Favorito[]> {
+    // Retorno el resultado de la consulta
+    return this.database
+      .executeSql('SELECT * FROM Favoritos WHERE id_usuarioFK = ?', [idUsuario])
+      .then((res) => {
+        // La consulta se realizó correctamente
+        let items: Favorito[] = [];
+
+        // Validar cuantos registros vienen en el select
+        if (res.rows.length > 0) {
+          // Recorro la consulta dentro del res
+          for (let i = 0; i < res.rows.length; i++) {
+            // Almaceno los registros en items
+            items.push({
+              idFavorito: res.rows.item(i).id_favorito,
+              idUsuarioFK: res.rows.item(i).id_usuarioFK,
+              idPublicacionFK: res.rows.item(i).id_publicacionFK,
+            });
+          }
+        }
+
+        // Retornar la lista de favoritos
+        return items;
+      })
+      .catch((error) => {
+        console.error('Error al obtener los favoritos del usuario:', error);
+        return [];
+      });
+  }
 
   /*-------------------- CONFIG.BASE DE DATOS ---------------------*/
   crearBD() {
@@ -575,6 +648,8 @@ export class DbService {
       this.buscarUsuarioRol();
       this.buscarCategoria();
       this.buscarPublicacion();
+      this.buscarFavorito();
+      
     } catch (e) {
       console.log('Error en crear Tabla:', e); // Mostrar error en consola para más detalles
       this.presentAlert('Error en crear Tabla: ' + JSON.stringify(e)); // Mostrar error detallado en un alert

@@ -41,6 +41,13 @@
         <ion-icon slot="start" name="create-outline"></ion-icon>
         Editar Libro
       </ion-button>
+
+      <!-- Botón para agregar a favoritos, visible solo si el usuario no es el propietario -->
+      <ion-button *ngIf="idUsuario !== libro.usuarioFK" expand="block" color="secondary" (click)="agregarAFavoritos()">
+        <ion-icon slot="start" name="heart-outline"></ion-icon>
+        Agregar a Favoritos
+      </ion-button>
+
     </ion-card-content>
   </ion-card>
 </ion-content>
