@@ -25,14 +25,14 @@ export class LoginPage implements OnInit {
   constructor(private fb: FormBuilder, private db: DbService, private router: Router) { }
 
   ngOnInit() {
-    this.db.dbState().subscribe(res => {
+    /* this.db.dbState().subscribe(res => {
       if (res) {
         this.db.fetchUsuario().subscribe(item => {
           // Filtramos el arreglo para omitir el rol de admin
           this.usuarios = item;
         });
       }
-    });
+    }); */
   }
 
   // Método para iniciar sesión

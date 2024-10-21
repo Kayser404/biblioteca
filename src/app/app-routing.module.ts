@@ -38,6 +38,10 @@ const routes: Routes = [
     path: 'favorito',
     loadChildren: () => import('./pages/favorito/favorito.module').then( m => m.FavoritoPageModule)
   },
+  {
+    path: 'perfil',
+    loadChildren: () => import('./pages/perfil/perfil.module').then( m => m.PerfilPageModule)
+  },
 
 
 

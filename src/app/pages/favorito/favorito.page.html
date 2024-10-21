@@ -1,13 +1,29 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
     <ion-title>favorito</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">favorito</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-list>
+    <ion-item *ngFor="let libro of publicacionesFavoritas">
+      <ion-thumbnail slot="start">
+        <img [src]="libro.foto || 'assets/img/default-book.png'" alt="{{ libro.titulo }}">
+      </ion-thumbnail>
+      
+      <ion-label>
+        <h2>{{ libro.titulo }}</h2>
+        <p>{{ libro.sinopsis }}</p>
+        <ion-text color="medium">Publicado el: {{ libro.fechaPublicacion }}</ion-text>
+      </ion-label>
+      
+      <ion-button fill="clear" slot="end" (click)="verDetalle(libro)">
+        <ion-icon name="eye" slot="icon-only"></ion-icon>
+        Ver Detalle
+      </ion-button>
+    </ion-item>
+  </ion-list>
 </ion-content>

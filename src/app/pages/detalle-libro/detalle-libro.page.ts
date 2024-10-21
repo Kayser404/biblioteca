@@ -11,6 +11,7 @@ import { DbService } from 'src/app/services/db.service';
 export class DetalleLibroPage implements OnInit {
   libro: any;
   idUsuario: string | null = null;
+  esFavorito: boolean = false;
 
   constructor(
     private router: Router,
@@ -28,6 +29,13 @@ export class DetalleLibroPage implements OnInit {
     } else {
       console.error('No se encontró el libro en el estado de navegación.');
     }
+    
+    // Verificar si el libro ya está en favoritos
+    if (this.idUsuario && this.libro?.idPublicacion) {
+      this.db.obtenerFavoritoUsuario(this.idUsuario).then(favoritos => {
+        this.esFavorito = favoritos.some(fav => fav.idPublicacionFK === this.libro.idPublicacion);
+      });
+    }
   }
 
   // Redireccionar a editar libro del usuario que coincide con su id de publicacion
@@ -35,29 +43,24 @@ export class DetalleLibroPage implements OnInit {
     this.router.navigate(['/editar-libro'], { state: { libro: this.libro } });
   }
 
-  // Método para agregar el libro a favoritos
-  /* agregarAFavoritos() {
-    if (this.idUsuario && this.libro.idPublicacion) {
-      this.db.agregarAFavoritos(this.idUsuario, this.libro.idPublicacion).then(() => {
-        console.log('Libro agregado a favoritos');
-        // Puedes mostrar un mensaje de éxito aquí si lo deseas
-      }).catch(error => {
-        console.error('Error al agregar el libro a favoritos:', error);
-      });
+   // Método para alternar entre agregar y eliminar de favoritos
+   toggleFavorito() {
+    if (this.esFavorito) {
+      // Si ya es favorito, eliminar de favoritos
+      this.quitarDeFavoritos();
+    } else {
+      // Si no es favorito, agregar a favoritos
+      this.agregarAFavoritos();
     }
-  } */
-  agregarAFavoritos() {
-    // Verificar si el ID del usuario y el ID de la publicación están definidos
-    if (this.idUsuario && this.libro.idPublicacion) {
-      // Imprimir los IDs antes de realizar la inserción en la base de datos
-      console.log('ID del Usuario:', this.idUsuario);
-      console.log('ID de la Publicación:', this.libro.idPublicacion);
+  }
 
-      // Llamar al método para agregar a favoritos
+  agregarAFavoritos() {
+    if (this.idUsuario && this.libro.idPublicacion) {
       this.db
         .agregarAFavoritos(this.idUsuario, this.libro.idPublicacion)
         .then(() => {
           console.log('Libro agregado a favoritos');
+          this.esFavorito = true; // Actualizar el estado a "favorito"
         })
         .catch((error) => {
           console.error('Error al agregar el libro a favoritos:', error);
@@ -66,4 +69,19 @@ export class DetalleLibroPage implements OnInit {
       console.error('ID del Usuario o ID de la Publicación no están definidos');
     }
   }
+
+  quitarDeFavoritos() {
+    if (this.idUsuario && this.libro.idPublicacion) {
+      this.db
+        .quitarDeFavoritos(this.idUsuario, this.libro.idPublicacion)
+        .then(() => {
+          console.log('Libro eliminado de favoritos');
+          this.esFavorito = false; // Actualizar el estado a "no favorito"
+        })
+        .catch((error) => {
+          console.error('Error al eliminar el libro de favoritos:', error);
+        });
+    }
+  }
+  
 }
