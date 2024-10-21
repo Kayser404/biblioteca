@@ -1,0 +1,40 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/lista-libro"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle del Libro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Detalle del Libro</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Imagen del libro -->
+  <ion-card>
+    <ion-img [src]="libro.foto || 'assets/img/default-book.png'" alt="{{ libro.titulo }}"></ion-img>
+  </ion-card>
+
+  <!-- Detalles del libro -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ libro.titulo }}</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <p><strong>Sinopsis:</strong> {{ libro.sinopsis }}</p>
+      <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion | date:'dd/MM/yyyy' }}</p>
+      <p><strong>Categoría:</strong> {{ libro.categoriaFK }}</p>
+
+      <!-- Botón para descargar el PDF del libro -->
+      <ion-button expand="block" fill="outline" [href]="libro.pdf" download>
+        <ion-icon slot="start" name="download-outline"></ion-icon>
+        Descargar PDF
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

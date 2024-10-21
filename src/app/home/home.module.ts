@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
-import { SidebarComponent } from '../components/sidebar/sidebar.component';
+import { SharedModule } from '../components/shared.module';
 
 import { HomePageRoutingModule } from './home-routing.module';
 
@@ -13,8 +13,9 @@ import { HomePageRoutingModule } from './home-routing.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    SharedModule
   ],
-  declarations: [HomePage, SidebarComponent]
+  declarations: [HomePage]
 })
 export class HomePageModule {}

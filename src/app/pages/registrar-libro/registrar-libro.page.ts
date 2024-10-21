@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DbService } from 'src/app/services/db.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registrar-libro',
@@ -13,11 +14,10 @@ export class RegistrarLibroPage implements OnInit {
   publicacionForm: FormGroup;
   categorias: any[] = [];
 
-  constructor(private fb: FormBuilder, private db: DbService, private auth: AuthService) {
+  constructor(private fb: FormBuilder, private db: DbService, private auth: AuthService, private router: Router) {
     this.publicacionForm = this.fb.group({
       titulo: ['', Validators.required],
       sinopsis: ['', Validators.required],
-      fechaPublicacion: ['', Validators.required],
       foto: [''],
       pdf: [''],
       id_categoriaFK: [null, Validators.required],
@@ -55,7 +55,7 @@ export class RegistrarLibroPage implements OnInit {
       const fechaPublicacion = new Date().toLocaleDateString('es-ES');
       const foto = this.publicacionForm.value.foto;
       const pdf = this.publicacionForm.value.pdf;
-      const idUsuario = this.auth.getIdUsuario;
+      const idUsuario = this.auth.getIdUsuario();
       const categoria = this.publicacionForm.value.categoria;
       
 
@@ -63,6 +63,7 @@ export class RegistrarLibroPage implements OnInit {
       this.db.agregarPublicacion(titulo, sinopsis, fechaPublicacion, foto, pdf, idUsuario, categoria)
         .then(() => {
           console.log('Publicación guardada con éxito');
+          this.router.navigate(['/lista-libro']);
         })
         .catch(error => {
           console.error('Error al guardar la publicación:', error);

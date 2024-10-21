@@ -1,0 +1,27 @@
+<app-sidebar></app-sidebar>
+
+<ion-content class="ion-padding">
+  <!-- Botón para registrar un libro -->
+  <ion-button expand="full" routerLink="/registrar-libro">
+    Registrar Libro
+  </ion-button>
+  
+  <!-- Lista de libros -->
+  <ion-list>
+    <ion-item *ngFor="let libro of publicaciones">
+      <ion-thumbnail slot="start">
+        <img [src]="libro.foto || 'assets/img/default-book.png'" alt="{{ libro.titulo }}">
+      </ion-thumbnail>
+      
+      <ion-label>
+        <h2>{{ libro.titulo }}</h2>
+        <p>{{ libro.sinopsis | slice:0:100 }}...</p>
+        <ion-text color="medium">Publicado el: {{ libro.fechaPublicacion | date:'dd/MM/yyyy' }}</ion-text>
+      </ion-label>
+      
+      <ion-button fill="clear" slot="end" (click)="verDetalleLibro(libro)">
+        <ion-icon name="eye" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -22,7 +22,15 @@ const routes: Routes = [
   {
     path: 'registrar-libro',
     loadChildren: () => import('./pages/registrar-libro/registrar-libro.module').then( m => m.RegistrarLibroPageModule)
+  },  {
+    path: 'lista-libro',
+    loadChildren: () => import('./pages/lista-libro/lista-libro.module').then( m => m.ListaLibroPageModule)
   },
+  {
+    path: 'detalle-libro',
+    loadChildren: () => import('./pages/detalle-libro/detalle-libro.module').then( m => m.DetalleLibroPageModule)
+  },
+
 
 
 ];

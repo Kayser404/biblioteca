@@ -14,6 +14,11 @@ export class SidebarComponent implements OnInit{
     private router: Router
   ) {}
 
+  // Método para alternar el menú
+  toggleMenu() {
+    this.menu.toggle('main-menu'); // 'main-menu' es el ID del menú
+  }
+
   logout() {
     // Cierra el menú antes de redirigir o cerrar sesión
     this.menu.close();
@@ -21,11 +26,10 @@ export class SidebarComponent implements OnInit{
     console.log('Cerrar sesión');
     this.navCtrl.navigateRoot('/login'); // Redirige a la página de login
   }
-  misLibros(){
-
-    this.router.navigate(['/registrar-libro'])
-
+  listaLibros(){
+    this.router.navigate(['/lista-libro'])
   }
+  
   ngOnInit() {}
   
 }

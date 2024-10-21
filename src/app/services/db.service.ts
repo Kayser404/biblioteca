@@ -16,6 +16,9 @@ import { PreguntaRespuesta } from './pregunta-respuesta';
   providedIn: 'root'
 })
 export class DbService {
+  fetchLibros() {
+    throw new Error('Method not implemented.');
+  }
   fetchPublicacion() {
     throw new Error('Method not implemented.');
   }
@@ -58,8 +61,8 @@ export class DbService {
       pdf TEXT,
       id_usuarioFK TEXT,
       id_categoriaFK INTEGER,
-      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(email),
-      FOREIGN KEY (id_categoriaFK) REFERENCES Categoria(id)
+      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
+      FOREIGN KEY (id_categoriaFK) REFERENCES Categoria(id_categoria)
     );
   `;
 
@@ -70,7 +73,7 @@ export class DbService {
       texto TEXT,
       id_usuarioFK TEXT,
       id_publicacionFK INTEGER,
-      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(email),
+      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
       FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id)
     );
   `;
@@ -80,7 +83,7 @@ export class DbService {
       id_usuarioFK TEXT,
       id_publicacionFK INTEGER,
       PRIMARY KEY (id_usuarioFK, id_publicacionFK),
-      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(email),
+      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
       FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id)
     );
   `;
@@ -90,7 +93,7 @@ export class DbService {
       id_usuarioFK TEXT,
       id_rolFK INTEGER,
       PRIMARY KEY (id_usuarioFK, id_rolFK),
-      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(email),
+      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
       FOREIGN KEY (id_rolFK) REFERENCES Rol(id)
     );
   `;
@@ -101,19 +104,19 @@ export class DbService {
       pregunta TEXT,
       respuesta TEXT,
       id_usuarioFK TEXT,
-      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(email)
+      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario)
     );
   `;
 
   // Insertar Roles
-  rolAdmin: string = "INSERT or IGNORE INTO Rol (nombreRol) VALUES ('admin')";
-  rolModerador: string = "INSERT or IGNORE INTO Rol (nombreRol) VALUES ('moderador')";
+  rolAdmin: string = "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('1', 'admin')";
+  rolModerador: string = "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('2', 'moderador')";
   
   //Insertar Categoria
-  categoriaDrama: string = "INSERT or IGNORE INTO Categoria (nombreCategoria) VALUES ('Drama')";
-  categoriaFantasia: string = "INSERT or IGNORE INTO Categoria (nombreCategoria) VALUES ('Fantasia')";  
-  categoriaTerror: string = "INSERT or IGNORE INTO Categoria (nombreCategoria) VALUES ('Terror')";  
-  categoriaRomance: string = "INSERT or IGNORE INTO Categoria (nombreCategoria) VALUES ('Romance')";    
+  categoriaDrama: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('1', 'Drama')";
+  categoriaFantasia: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('2', 'Fantasia')";  
+  categoriaTerror: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('3', 'Terror')";  
+  categoriaRomance: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('4', 'Romance')";    
   
 
   // creacion observables para las tablas que se consultaran
@@ -380,6 +383,32 @@ export class DbService {
       this.buscarPublicacion();
     })
   }
+  obtenerPublicacionUsuario(idUsuario: any) {
+    return this.database.executeSql('SELECT * FROM Publicacion WHERE id_usuarioFK = ?', [idUsuario])
+      .then(res => {
+        if (res.rows.length > 0) {
+          const publicaciones = [];
+          for (let i = 0; i < res.rows.length; i++) {
+            publicaciones.push({
+              idPublicacion: res.rows.item(i).id_publicacion,
+              titulo: res.rows.item(i).titulo,
+              sinopsis: res.rows.item(i).sinopsis,
+              fechaPublicacion: res.rows.item(i).fechaPublicacion,
+              foto: res.rows.item(i).foto,
+              pdf: res.rows.item(i).pdf,
+              categoriaFK: res.rows.item(i).id_categoriaFK,
+            });
+          }
+          return publicaciones; // Devuelve todas las publicaciones del usuario
+        } else {
+          return null; // Si no hay publicaciones
+        }
+      })
+      .catch(error => {
+        console.error('Error al obtener las publicaciones del usuario:', error);
+        return null;
+      });
+  }
 
 /*-------------------- CONFIG.BASE DE DATOS ---------------------*/
   crearBD() {
@@ -429,6 +458,8 @@ export class DbService {
       this.buscarRol();
       this.buscarPreguntaRespuesta();
       this.buscarUsuarioRol();
+      this.buscarCategoria();
+      this.buscarPublicacion();
   
     } catch (e) {
       console.log('Error en crear Tabla:', e); // Mostrar error en consola para más detalles
