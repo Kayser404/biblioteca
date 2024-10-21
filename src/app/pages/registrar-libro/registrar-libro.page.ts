@@ -80,11 +80,6 @@ export class RegistrarLibroPage implements OnInit {
     }
   }
 
-
-
-
-
-
   /* Camara */
   takePicture = async () => {
     const image2 = await Camera.getPhoto({
@@ -97,33 +92,44 @@ export class RegistrarLibroPage implements OnInit {
     this.publicacionForm.patchValue({ foto: image2.dataUrl });
   };
   
-  enviar() {
+  async enviar() {
     if (this.publicacionForm.valid && this.selectedFile) {
       const titulo = this.publicacionForm.value.titulo;
       const sinopsis = this.publicacionForm.value.sinopsis;
       const fechaPublicacion = new Date().toLocaleDateString('es-ES');
       const foto = this.publicacionForm.value.foto;
-      const pdf = this.publicacionForm.value.pdf;
       const idUsuario = this.auth.getIdUsuario();
       const categoria = this.publicacionForm.value.categoria;
-      
-
-      // Guardar la publicación en la base de datos
-      this.db.agregarPublicacion(titulo, sinopsis, fechaPublicacion, foto, pdf, idUsuario, categoria)
-        .then(() => {
+    
+      try {
+        // Guardar el archivo PDF y obtener su URI
+        const pdfUri = await this.guardarArchivoPDF(this.selectedFile);
+        
+        // Establecer la URI del PDF en el campo del formulario
+        this.publicacionForm.patchValue({ pdf: pdfUri });
+        
+        // Guardar la publicación en la base de datos usando el valor del formulario
+        this.db.agregarPublicacion(
+          titulo,
+          sinopsis,
+          fechaPublicacion,
+          foto,
+          this.publicacionForm.value.pdf, // Usar la URI del PDF desde el formulario
+          idUsuario,
+          categoria
+        ).then(() => {
           console.log('Publicación guardada con éxito');
+          console.log('URI del archivo PDF:', pdfUri);
           this.router.navigate(['/lista-libro']);
-        })
-        .catch(error => {
+        }).catch(error => {
           console.error('Error al guardar la publicación:', error);
         });
+      } catch (error) {
+        console.error('Error al guardar el archivo PDF:', error);
+      }
     } else {
       console.log('Formulario inválido');
     }
-  }
-
-
+  }  
   
-  
-
 }
