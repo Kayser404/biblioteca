@@ -1,5 +1,8 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/lista-libro"></ion-back-button>
+    </ion-buttons>
     <ion-title>Registrar Publicación</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -41,14 +44,14 @@
 
     <ion-item>
       <ion-label position="floating">Categoría</ion-label>
-      <ion-select formControlName="id_categoriaFK">
-        <ion-select-option *ngFor="let categoria of categorias" [value]="categoria.id">
+      <ion-select formControlName="categoria">
+        <ion-select-option *ngFor="let categoria of categorias" [value]="categoria.id_categoria">
           {{ categoria.nombreCategoria }}
         </ion-select-option>
       </ion-select>
     </ion-item>
     <div
-      *ngIf="publicacionForm.get('id_categoriaFK')?.invalid && (publicacionForm.get('id_categoriaFK')?.touched || publicacionForm.get('id_categoriaFK')?.dirty)">
+      *ngIf="publicacionForm.get('categoria')?.invalid && (publicacionForm.get('categoria')?.touched || publicacionForm.get('categoria')?.dirty)">
       <ion-text color="danger">La categoría es obligatoria</ion-text>
     </div>
 

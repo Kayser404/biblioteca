@@ -27,8 +27,8 @@
 
     <ion-card-content>
       <p><strong>Sinopsis:</strong> {{ libro.sinopsis }}</p>
-      <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion | date:'dd/MM/yyyy' }}</p>
-      <p><strong>Categoría:</strong> {{ libro.categoriaFK }}</p>
+      <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion }}</p>
+      <p><strong>Categoría:</strong> {{ libro.categoriaFK  }}</p>
 
       <!-- Botón para descargar el PDF del libro -->
       <ion-button expand="block" fill="outline" [href]="libro.pdf" download>

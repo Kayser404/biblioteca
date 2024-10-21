@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController, NavController } from '@ionic/angular';
+import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 export class SidebarComponent implements OnInit{
   constructor(
     private menu: MenuController,
-    private navCtrl: NavController,
     private router: Router
   ) {}
 
@@ -24,10 +23,12 @@ export class SidebarComponent implements OnInit{
     this.menu.close();
     // Aquí va la lógica de cierre de sesión, como borrar tokens o navegar a la pantalla de login
     console.log('Cerrar sesión');
-    this.navCtrl.navigateRoot('/login'); // Redirige a la página de login
+    this.router.navigate(['/login']); // Redirige a la página de login
   }
-  listaLibros(){
-    this.router.navigate(['/lista-libro'])
+  // Método para navegar a diferentes rutas
+  navigateTo(path: string) {
+    this.router.navigate([`/${path}`]);
+    this.menu.close(); // Cierra el menú después de la navegación
   }
   
   ngOnInit() {}

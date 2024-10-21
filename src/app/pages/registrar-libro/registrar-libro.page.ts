@@ -20,7 +20,7 @@ export class RegistrarLibroPage implements OnInit {
       sinopsis: ['', Validators.required],
       foto: [''],
       pdf: [''],
-      id_categoriaFK: [null, Validators.required],
+      categoria: ['', Validators.required],
     
     });
   }

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-home',
@@ -6,31 +7,31 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  libros = [
-    {
-      titulo: 'El Principito',
-      autor: 'Antoine de Saint-Exupéry',
-      descripcion: 'Un pequeño príncipe explora planetas y aprende sobre la vida y el amor.',
-      imagen: 'assets/img/el-principito.jpg'
-    },
-    {
-      titulo: 'Cien Años de Soledad',
-      autor: 'Gabriel García Márquez',
-      descripcion: 'La historia épica de la familia Buendía en el pueblo ficticio de Macondo.',
-      imagen: 'assets/img/cien-anos-de-soledad.jpg'
-    },
-    {
-      titulo: '1984',
-      autor: 'George Orwell',
-      descripcion: 'Una distopía sobre un futuro controlado por un régimen totalitario.',
-      imagen: 'assets/img/1984.jpg'
-    }
-    // Agrega más libros según sea necesario
-  ];
+  libros: any[] = [];
 
-  constructor() { }
+  constructor(private db: DbService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.db.dbState().subscribe((res) => {
+      if (res) {
+        this.db.fetchPublicaciones().subscribe((item) => {
+          // Filtramos el arreglo para omitir el rol de admin
+          this.libros = item;
+          // Imprimir cada libro y sus campos
+          this.libros.forEach((libro) => {
+            console.log('ID Publicacion:', libro.idPublicacion);
+            console.log('Título:', libro.titulo);
+            console.log('Sinopsis:', libro.sinopsis);
+            console.log('Fecha de Publicación:', libro.fechaPublicacion);
+            console.log('Foto:', libro.foto);
+            console.log('PDF:', libro.pdf);
+            console.log('Usuario FK:', libro.usuarioFK);
+            console.log('Categoría FK:', libro.categoriaFK);
+          });
+        });
+      }
+    });
+  }
 
   verDetalles(libro: any) {
     console.log('Ver detalles de:', libro.titulo);

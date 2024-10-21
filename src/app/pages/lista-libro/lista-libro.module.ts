@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 import { ListaLibroPageRoutingModule } from './lista-libro-routing.module';
 
 import { ListaLibroPage } from './lista-libro.page';
-import { SharedModule } from '../../components/shared.module';
 
 @NgModule({
   imports: [
@@ -15,7 +14,6 @@ import { SharedModule } from '../../components/shared.module';
     FormsModule,
     IonicModule,
     ListaLibroPageRoutingModule,
-    SharedModule,
   ],
   declarations: [ListaLibroPage]
 })

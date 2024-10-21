@@ -1,4 +1,11 @@
-<app-sidebar></app-sidebar>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis publicaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
 
 <ion-content class="ion-padding">
   <!-- Botón para registrar un libro -->
@@ -15,8 +22,7 @@
       
       <ion-label>
         <h2>{{ libro.titulo }}</h2>
-        <p>{{ libro.sinopsis | slice:0:100 }}...</p>
-        <ion-text color="medium">Publicado el: {{ libro.fechaPublicacion | date:'dd/MM/yyyy' }}</ion-text>
+        <ion-text color="medium">Publicado el: {{ libro.fechaPublicacion }}</ion-text>
       </ion-label>
       
       <ion-button fill="clear" slot="end" (click)="verDetalleLibro(libro)">

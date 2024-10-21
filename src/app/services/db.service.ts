@@ -74,27 +74,27 @@ export class DbService {
       id_usuarioFK TEXT,
       id_publicacionFK INTEGER,
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
-      FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id)
+      FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id_publicacion)
     );
   `;
 
   tablaFavorito: string = `
     CREATE TABLE IF NOT EXISTS Favorito (
+      id_favorito INTEGER PRIMARY KEY AUTOINCREMENT,
       id_usuarioFK TEXT,
       id_publicacionFK INTEGER,
-      PRIMARY KEY (id_usuarioFK, id_publicacionFK),
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
-      FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id)
+      FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id_publicacion)
     );
   `;
 
   tablaUsuarioRol: string = `
     CREATE TABLE IF NOT EXISTS UsuarioRol (
+      id_usuario_rol INTEGER PRIMARY KEY AUTOINCREMENT,
       id_usuarioFK TEXT,
       id_rolFK INTEGER,
-      PRIMARY KEY (id_usuarioFK, id_rolFK),
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
-      FOREIGN KEY (id_rolFK) REFERENCES Rol(id)
+      FOREIGN KEY (id_rolFK) REFERENCES Rol(id_rol)
     );
   `;
 
@@ -236,7 +236,7 @@ export class DbService {
         for (var i = 0; i < res.rows.length; i++) {
           //alamaceno los registros en items
           items.push({
-            idRol: res.rows.item(i).idRol,
+            idRol: res.rows.item(i).id_rol,
             nombreRol: res.rows.item(i).nombreRol,
           })
         }
@@ -260,7 +260,7 @@ export class DbService {
         for (var i = 0; i < res.rows.length; i++) {
           //alamaceno los registros en items
           items.push({
-            idUsuarioRol: res.rows.item(i).idUsuarioRol,
+            idUsuarioRol: res.rows.item(i).id_usuario,
             usuarioFK: res.rows.item(i).usuarioFK,
             rolFK: res.rows.item(i).rolFK,
 
@@ -308,7 +308,7 @@ export class DbService {
             idPregunta: res.rows.item(i).idPregunta,
             pregunta: res.rows.item(i).pregunta,
             respuesta: res.rows.item(i).respuesta,
-            usuarioFK: res.rows.item(i).usuarioFK
+            usuarioFK: res.rows.item(i).id_usuarioFK
           })
         }
       }
@@ -337,7 +337,7 @@ export class DbService {
         for (var i = 0; i < res.rows.length; i++) {
           //alamaceno los registros en items
           items.push({
-            idCategoria: res.rows.item(i).idCategoria,
+            idCategoria: res.rows.item(i).id_categoria,
             nombreCategoria: res.rows.item(i).nombreCategoria
             
           })
@@ -369,8 +369,8 @@ export class DbService {
             fechaPublicacion: res.rows.item(i).fechaPublicacion,
             foto: res.rows.item(i).foto,
             pdf: res.rows.item(i).pdf,
-            usuarioFK: res.rows.item(i).usuarioFK,
-            categoriaFK: res.rows.item(i).categoriaFK
+            usuarioFK: res.rows.item(i).id_usuarioFK,
+            categoriaFK: res.rows.item(i).id_categoriaFK
           })
         }
       }
@@ -416,7 +416,7 @@ export class DbService {
     this.platform.ready().then(() => {
       //crear la BD
       this.sqlite.create({
-        name: 'bdadoptame.db',
+        name: 'biblioteca.db',
         location: 'default'
       }).then((db: SQLiteObject) => {
         //guardo la conexión a BD en mi variable
