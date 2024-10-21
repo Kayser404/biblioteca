@@ -1,0 +1,70 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/detalle-libro"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Editar Libro</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Editar Libro</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <form [formGroup]="libroForm" (ngSubmit)="guardarCambios()">
+    <ion-list>
+      <!-- Campo para el título del libro -->
+      <ion-item>
+        <ion-label position="floating">Título</ion-label>
+        <ion-input formControlName="titulo" required></ion-input>
+      </ion-item>
+
+      <!-- Campo para la sinopsis del libro -->
+      <ion-item>
+        <ion-label position="floating">Sinopsis</ion-label>
+        <ion-textarea formControlName="sinopsis" required></ion-textarea>
+      </ion-item>
+
+      <!-- Mostrar la fecha de publicación (no editable) -->
+      <ion-item>
+        <ion-label>Fecha de Publicación</ion-label>
+        <ion-note>{{ libro.fechaPublicacion }}</ion-note>
+      </ion-item>
+
+      <!-- Campo para la categoría del libro -->
+      <ion-item>
+        <ion-label position="floating">Categoría</ion-label>
+        <ion-select formControlName="categoriaFK" interface="popover">
+          <ion-select-option *ngFor="let categoria of categorias" [value]="categoria.id_categoria">
+            {{ categoria.nombreCategoria }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- Campo para la foto del libro -->
+      <ion-item>
+        <label for="file-input" class="disfras">Imagen de Portada
+          <ion-icon class="img" name="image-outline"></ion-icon>
+          <h1>Seleccione una imagen</h1>
+        </label>
+        <input (click)="takePicture()" id="file-input" formControlName="foto">
+        <ion-img class="image" [src]="libroForm.value.foto" *ngIf="libroForm.value.foto"></ion-img>
+      </ion-item>
+
+      <!-- Campo para el PDF del libro -->
+      <ion-item>
+        <ion-label position="floating">PDF URL</ion-label>
+        <ion-input formControlName="pdf" placeholder="URL del PDF"></ion-input>
+      </ion-item>
+
+      <!-- Botón para guardar los cambios -->
+      <ion-button expand="block" type="submit" [disabled]="!libroForm.valid">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Guardar Cambios
+      </ion-button>
+    </ion-list>
+  </form>
+</ion-content>

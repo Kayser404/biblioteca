@@ -13,7 +13,7 @@ import { UsuarioRol } from './usuario-rol';
 import { PreguntaRespuesta } from './pregunta-respuesta';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DbService {
   fetchLibros() {
@@ -109,15 +109,20 @@ export class DbService {
   `;
 
   // Insertar Roles
-  rolAdmin: string = "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('1', 'admin')";
-  rolModerador: string = "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('2', 'moderador')";
-  
+  rolAdmin: string =
+    "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('1', 'admin')";
+  rolModerador: string =
+    "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('2', 'moderador')";
+
   //Insertar Categoria
-  categoriaDrama: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('1', 'Drama')";
-  categoriaFantasia: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('2', 'Fantasia')";  
-  categoriaTerror: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('3', 'Terror')";  
-  categoriaRomance: string = "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('4', 'Romance')";    
-  
+  categoriaDrama: string =
+    "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('1', 'Drama')";
+  categoriaFantasia: string =
+    "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('2', 'Fantasia')";
+  categoriaTerror: string =
+    "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('3', 'Terror')";
+  categoriaRomance: string =
+    "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('4', 'Romance')";
 
   // creacion observables para las tablas que se consultaran
   listaUsuarios = new BehaviorSubject([]);
@@ -128,15 +133,14 @@ export class DbService {
   listaRol = new BehaviorSubject([]);
   listaUsuarioRol = new BehaviorSubject([]);
   listaPreguntaRespuesta = new BehaviorSubject([]);
-  
+
   //observable para manipular el status de la BD
   private isDBReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     private alertController: AlertController,
     public sqlite: SQLite,
-    private platform: Platform,
-  
+    private platform: Platform
   ) {
     this.crearBD();
   }
@@ -146,14 +150,14 @@ export class DbService {
     return this.isDBReady.asObservable();
   }
 
-/*------------- Consultas -------------------------------------*/
+  /*------------- Consultas -------------------------------------*/
   /* Usuario */
   fetchUsuario(): Observable<Usuarios[]> {
     return this.listaUsuarios.asObservable();
   }
   buscarUsuario() {
     //retorno el resultado de la consulta
-    return this.database.executeSql('SELECT * FROM Usuario', []).then(res => {
+    return this.database.executeSql('SELECT * FROM Usuario', []).then((res) => {
       //la consulta se realizó correctamente
       //creamos una variable para almacenar los registros del select
       let items: any[] = [];
@@ -167,7 +171,7 @@ export class DbService {
             password: res.rows.item(i).password,
             nombreUsuario: res.rows.item(i).nombreUsuario,
             apellidoUsuario: res.rows.item(i).apellidoUsuario,
-            edadUsuario: res.rows.item(i).edadUsuario
+            edadUsuario: res.rows.item(i).edadUsuario,
             // Agrega más propiedades aquí si las has definido en la tabla
           });
         }
@@ -175,35 +179,50 @@ export class DbService {
       this.listaUsuarios.next(items as any);
     });
   }
-  registrarUsuario(email: any, password: any, nombreUsuario: any, apellidoUsuario: any, edadUsuario: any) {
-    return this.database.executeSql('INSERT INTO Usuario (email, password, nombreUsuario, apellidoUsuario, edadUsuario) VALUES (?, ?, ?, ?, ?)', [email, password, nombreUsuario, apellidoUsuario, edadUsuario]).then(async res => {
-      // Verificar si la inserción tuvo éxito
-      if (res.rowsAffected > 0) {
-        // La inserción tuvo éxito, muestra alerta de éxito
-        await this.presentAlert('La inserción fue exitosa');
-        const idUsuario = res.insertId;
-        this.buscarUsuario();  // Si tienes una función para buscar usuarios
-        return idUsuario;
-      } else {
-        // La inserción no tuvo éxito, muestra alerta de error
-        await this.presentAlert('Hubo un problema al insertar el usuario.');
+  registrarUsuario(
+    email: any,
+    password: any,
+    nombreUsuario: any,
+    apellidoUsuario: any,
+    edadUsuario: any
+  ) {
+    return this.database
+      .executeSql(
+        'INSERT INTO Usuario (email, password, nombreUsuario, apellidoUsuario, edadUsuario) VALUES (?, ?, ?, ?, ?)',
+        [email, password, nombreUsuario, apellidoUsuario, edadUsuario]
+      )
+      .then(async (res) => {
+        // Verificar si la inserción tuvo éxito
+        if (res.rowsAffected > 0) {
+          // La inserción tuvo éxito, muestra alerta de éxito
+          await this.presentAlert('La inserción fue exitosa');
+          const idUsuario = res.insertId;
+          this.buscarUsuario(); // Si tienes una función para buscar usuarios
+          return idUsuario;
+        } else {
+          // La inserción no tuvo éxito, muestra alerta de error
+          await this.presentAlert('Hubo un problema al insertar el usuario.');
+          return null;
+        }
+      })
+      .catch(async (error) => {
+        // Muestra alerta si ocurre un error
+        console.error('Error al insertar', error);
+        await this.presentAlert('Error al insertar: ' + error.message);
         return null;
-      }
-    })
-    .catch(async error => {
-      // Muestra alerta si ocurre un error
-      console.error('Error al insertar', error);
-      await this.presentAlert('Error al insertar: ' + error.message);
-      return null;
-    });
+      });
   }
   verificarCredenciales(email: string, password: string) {
     if (!email || !password) {
       return Promise.reject('Email o contraseña no válidos');
     }
-  
-    return this.database.executeSql('SELECT id_usuario, email, password FROM Usuario WHERE email = ? AND password = ?', [email, password])
-      .then(res => {
+
+    return this.database
+      .executeSql(
+        'SELECT id_usuario, email, password FROM Usuario WHERE email = ? AND password = ?',
+        [email, password]
+      )
+      .then((res) => {
         if (res.rows.length > 0) {
           // Retornar el primer usuario encontrado
           const usuario = res.rows.item(0);
@@ -213,20 +232,20 @@ export class DbService {
           return null;
         }
       })
-      .catch(err => {
+      .catch((err) => {
         // Capturar errores en la consulta
         console.error('Error en la base de datos:', err);
         return Promise.reject('Error en la base de datos');
       });
   }
-  
+
   /* ROL */
   fetchRol(): Observable<Rol[]> {
     return this.listaRol.asObservable();
   }
   buscarRol() {
     //retorno el resultado de la consulta
-    return this.database.executeSql('SELECT * FROM ROL', []).then(res => {
+    return this.database.executeSql('SELECT * FROM ROL', []).then((res) => {
       //la consulta se realizó correctamente
       //creamos una variable para almacenar los registros del select
       let items: Rol[] = [];
@@ -238,11 +257,11 @@ export class DbService {
           items.push({
             idRol: res.rows.item(i).id_rol,
             nombreRol: res.rows.item(i).nombreRol,
-          })
+          });
         }
       }
       this.listaRol.next(items as any);
-    })
+    });
   }
   /* UsuarioRoles */
   fetchUsuarioRol(): Observable<UsuarioRol[]> {
@@ -250,76 +269,96 @@ export class DbService {
   }
   buscarUsuarioRol() {
     //retorno el resultado de la consulta
-    return this.database.executeSql('SELECT * FROM UsuarioRol', []).then(res => {
-      //la consulta se realizó correctamente
-      //creamos una variable para almacenar los registros del select
-      let items: UsuarioRol[] = [];
-      //validar cuantos registros vienen en el select
-      if (res.rows.length > 0) {
-        //recorro la consulta dentro del res
-        for (var i = 0; i < res.rows.length; i++) {
-          //alamaceno los registros en items
-          items.push({
-            idUsuarioRol: res.rows.item(i).id_usuario,
-            usuarioFK: res.rows.item(i).usuarioFK,
-            rolFK: res.rows.item(i).rolFK,
-
-          })
+    return this.database
+      .executeSql('SELECT * FROM UsuarioRol', [])
+      .then((res) => {
+        //la consulta se realizó correctamente
+        //creamos una variable para almacenar los registros del select
+        let items: UsuarioRol[] = [];
+        //validar cuantos registros vienen en el select
+        if (res.rows.length > 0) {
+          //recorro la consulta dentro del res
+          for (var i = 0; i < res.rows.length; i++) {
+            //alamaceno los registros en items
+            items.push({
+              idUsuarioRol: res.rows.item(i).id_usuario,
+              usuarioFK: res.rows.item(i).usuarioFK,
+              rolFK: res.rows.item(i).rolFK,
+            });
+          }
         }
-      }
-      this.listaUsuarioRol.next(items as any);
-    })
+        this.listaUsuarioRol.next(items as any);
+      });
   }
   agregarUsuarioRol(usuarioFK: any, rolFK: any) {
     console.log('Intentando agregar roles para ID de usuario:', usuarioFK);
-    return this.database.executeSql('INSERT INTO UsuarioRol (id_usuarioFK, id_rolFK) VALUES (?, ?)', [usuarioFK, rolFK]).then(res => {
-      this.buscarUsuarioRol();
-    })
+    return this.database
+      .executeSql(
+        'INSERT INTO UsuarioRol (id_usuarioFK, id_rolFK) VALUES (?, ?)',
+        [usuarioFK, rolFK]
+      )
+      .then((res) => {
+        this.buscarUsuarioRol();
+      });
   }
   obtenerUsuarioRol(usuarioFK: any) {
-    return this.database.executeSql('SELECT id_rolFK FROM UsuarioRol WHERE id_usuarioFK = ?', [usuarioFK]).then(res => {
-      if (res.rows.length > 0) {
-        const roles = [];
-        for (let i = 0; i < res.rows.length; i++) {
-          roles.push(res.rows.item(i).id_rolFK);
+    return this.database
+      .executeSql('SELECT id_rolFK FROM UsuarioRol WHERE id_usuarioFK = ?', [
+        usuarioFK,
+      ])
+      .then((res) => {
+        if (res.rows.length > 0) {
+          const roles = [];
+          for (let i = 0; i < res.rows.length; i++) {
+            roles.push(res.rows.item(i).id_rolFK);
+          }
+          return roles; // Retornar un arreglo de roles
+        } else {
+          return null;
         }
-        return roles; // Retornar un arreglo de roles
-      } else {
-        return null;
-      }
-    });
-  }  
+      });
+  }
   /* PreguntaRespuesta */
   fetchPreguntaRespuesta(): Observable<PreguntaRespuesta[]> {
     return this.listaPreguntaRespuesta.asObservable();
   }
   buscarPreguntaRespuesta() {
     //retorno el resultado de la consulta
-    return this.database.executeSql('SELECT * FROM PREGUNTARESPUESTA', []).then(res => {
-      //la consulta se realizó correctamente
-      //creamos una variable para almacenar los registros del select
-      let items: PreguntaRespuesta[] = [];
-      //validar cuantos registros vienen en el select
-      if (res.rows.length > 0) {
-        //recorro la consulta dentro del res
-        for (var i = 0; i < res.rows.length; i++) {
-          //alamaceno los registros en items
-          items.push({
-            idPregunta: res.rows.item(i).idPregunta,
-            pregunta: res.rows.item(i).pregunta,
-            respuesta: res.rows.item(i).respuesta,
-            usuarioFK: res.rows.item(i).id_usuarioFK
-          })
+    return this.database
+      .executeSql('SELECT * FROM PREGUNTARESPUESTA', [])
+      .then((res) => {
+        //la consulta se realizó correctamente
+        //creamos una variable para almacenar los registros del select
+        let items: PreguntaRespuesta[] = [];
+        //validar cuantos registros vienen en el select
+        if (res.rows.length > 0) {
+          //recorro la consulta dentro del res
+          for (var i = 0; i < res.rows.length; i++) {
+            //alamaceno los registros en items
+            items.push({
+              idPregunta: res.rows.item(i).idPregunta,
+              pregunta: res.rows.item(i).pregunta,
+              respuesta: res.rows.item(i).respuesta,
+              usuarioFK: res.rows.item(i).id_usuarioFK,
+            });
+          }
         }
-      }
-      this.listaPreguntaRespuesta.next(items as any);
-    })
+        this.listaPreguntaRespuesta.next(items as any);
+      });
   }
   agregarPreguntaRespuesta(pregunta: any, respuesta: any, usuarioFK: any) {
-    console.log('Intentando agregar pregunta y respuesta para ID de usuario:', usuarioFK);
-    return this.database.executeSql('INSERT INTO PREGUNTARESPUESTA (PREGUNTA, RESPUESTA, ID_USUARIOFK) VALUES (?, ?, ?)', [pregunta, respuesta, usuarioFK]).then(res => {
-      this.buscarPreguntaRespuesta();
-    })
+    console.log(
+      'Intentando agregar pregunta y respuesta para ID de usuario:',
+      usuarioFK
+    );
+    return this.database
+      .executeSql(
+        'INSERT INTO PREGUNTARESPUESTA (PREGUNTA, RESPUESTA, ID_USUARIOFK) VALUES (?, ?, ?)',
+        [pregunta, respuesta, usuarioFK]
+      )
+      .then((res) => {
+        this.buscarPreguntaRespuesta();
+      });
   }
   /* Publicaciones */
   fetchCategoria(): Observable<Categoria[]> {
@@ -327,24 +366,25 @@ export class DbService {
   }
   buscarCategoria() {
     //retorno el resultado de la consulta
-    return this.database.executeSql('SELECT * FROM Categoria', []).then(res => {
-      //la consulta se realizó correctamente
-      //creamos una variable para almacenar los registros del select
-      let items: Categoria[] = [];
-      //validar cuantos registros vienen en el select
-      if (res.rows.length > 0) {
-        //recorro la consulta dentro del res
-        for (var i = 0; i < res.rows.length; i++) {
-          //alamaceno los registros en items
-          items.push({
-            idCategoria: res.rows.item(i).id_categoria,
-            nombreCategoria: res.rows.item(i).nombreCategoria
-            
-          })
+    return this.database
+      .executeSql('SELECT * FROM Categoria', [])
+      .then((res) => {
+        //la consulta se realizó correctamente
+        //creamos una variable para almacenar los registros del select
+        let items: Categoria[] = [];
+        //validar cuantos registros vienen en el select
+        if (res.rows.length > 0) {
+          //recorro la consulta dentro del res
+          for (var i = 0; i < res.rows.length; i++) {
+            //alamaceno los registros en items
+            items.push({
+              idCategoria: res.rows.item(i).id_categoria,
+              nombreCategoria: res.rows.item(i).nombreCategoria,
+            });
+          }
         }
-      }
-      this.listaCategoria.next(items as any);
-    })
+        this.listaCategoria.next(items as any);
+      });
   }
 
   /* Publicaciones */
@@ -353,39 +393,57 @@ export class DbService {
   }
   buscarPublicacion() {
     //retorno el resultado de la consulta
-    return this.database.executeSql('SELECT * FROM Publicacion', []).then(res => {
-      //la consulta se realizó correctamente
-      //creamos una variable para almacenar los registros del select
-      let items: Publicacion[] = [];
-      //validar cuantos registros vienen en el select
-      if (res.rows.length > 0) {
-        //recorro la consulta dentro del res
-        for (var i = 0; i < res.rows.length; i++) {
-          //alamaceno los registros en items
-          items.push({
-            idPublicacion: res.rows.item(i).idPublicacion,
-            titulo: res.rows.item(i).titulo,
-            sinopsis: res.rows.item(i).sinopsis,
-            fechaPublicacion: res.rows.item(i).fechaPublicacion,
-            foto: res.rows.item(i).foto,
-            pdf: res.rows.item(i).pdf,
-            usuarioFK: res.rows.item(i).id_usuarioFK,
-            categoriaFK: res.rows.item(i).id_categoriaFK
-          })
+    return this.database
+      .executeSql('SELECT * FROM Publicacion', [])
+      .then((res) => {
+        //la consulta se realizó correctamente
+        //creamos una variable para almacenar los registros del select
+        let items: Publicacion[] = [];
+        //validar cuantos registros vienen en el select
+        if (res.rows.length > 0) {
+          //recorro la consulta dentro del res
+          for (var i = 0; i < res.rows.length; i++) {
+            //alamaceno los registros en items
+            items.push({
+              idPublicacion: res.rows.item(i).id_publicacion,
+              titulo: res.rows.item(i).titulo,
+              sinopsis: res.rows.item(i).sinopsis,
+              fechaPublicacion: res.rows.item(i).fechaPublicacion,
+              foto: res.rows.item(i).foto,
+              pdf: res.rows.item(i).pdf,
+              usuarioFK: res.rows.item(i).id_usuarioFK,
+              categoriaFK: res.rows.item(i).id_categoriaFK,
+            });
+          }
         }
-      }
-      this.listaPublicacion.next(items as any);
-    })
+        this.listaPublicacion.next(items as any);
+      });
   }
-  agregarPublicacion(titulo: any, sinopsis: any, fechaPublicacion: any, foto: any, pdf: any, usuarioFK:any, categoriaFK:any) {
+  agregarPublicacion(
+    titulo: any,
+    sinopsis: any,
+    fechaPublicacion: any,
+    foto: any,
+    pdf: any,
+    usuarioFK: any,
+    categoriaFK: any
+  ) {
     console.log('Intentando agregregar publicacion');
-    return this.database.executeSql('INSERT INTO Publicacion (titulo, sinopsis, fechaPublicacion, foto, pdf, id_usuarioFK, id_categoriaFK) VALUES (?, ?, ?, ?, ?, ?, ?)', [titulo, sinopsis, fechaPublicacion, foto, pdf, usuarioFK, categoriaFK ]).then(res => {
-      this.buscarPublicacion();
-    })
+    return this.database
+      .executeSql(
+        'INSERT INTO Publicacion (titulo, sinopsis, fechaPublicacion, foto, pdf, id_usuarioFK, id_categoriaFK) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [titulo, sinopsis, fechaPublicacion, foto, pdf, usuarioFK, categoriaFK]
+      )
+      .then((res) => {
+        this.buscarPublicacion();
+      });
   }
   obtenerPublicacionUsuario(idUsuario: any) {
-    return this.database.executeSql('SELECT * FROM Publicacion WHERE id_usuarioFK = ?', [idUsuario])
-      .then(res => {
+    return this.database
+      .executeSql('SELECT * FROM Publicacion WHERE id_usuarioFK = ?', [
+        idUsuario,
+      ])
+      .then((res) => {
         if (res.rows.length > 0) {
           const publicaciones = [];
           for (let i = 0; i < res.rows.length; i++) {
@@ -396,6 +454,7 @@ export class DbService {
               fechaPublicacion: res.rows.item(i).fechaPublicacion,
               foto: res.rows.item(i).foto,
               pdf: res.rows.item(i).pdf,
+              usuarioFK: res.rows.item(i).id_usuarioFK,
               categoriaFK: res.rows.item(i).id_categoriaFK,
             });
           }
@@ -404,55 +463,111 @@ export class DbService {
           return null; // Si no hay publicaciones
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error al obtener las publicaciones del usuario:', error);
         return null;
       });
   }
+  // Método para actualizar una publicación
+  actualizarPublicacion(
+    titulo: any,
+    sinopsis: any,
+    foto: any,
+    pdf: any,
+    categoriaFK: any,
+    idPublicacion: any
+  ): Promise<any> {
+    return this.database
+      .executeSql(
+        'UPDATE Publicacion SET titulo = ?, sinopsis = ?, foto = ?, pdf = ?, id_categoriaFK = ? WHERE id_publicacion = ?;',
+        [titulo, sinopsis, foto, pdf, categoriaFK, idPublicacion]
+      )
+      .then(() => {
+        console.log('Publicación actualizada correctamente');
+        this.buscarPublicacion();
+        return true;
+      })
+      .catch((error) => {
+        console.error('Error al actualizar la publicación:', error);
+        return false;
+      });
+  }
+  // Método para obtener una publicación por su ID
+  obtenerPublicacionPorId(idPublicacion: any): Promise<any> {
+    return this.database
+      .executeSql('SELECT * FROM Publicacion WHERE id_publicacion = ?', [
+        idPublicacion,
+      ])
+      .then((res) => {
+        if (res.rows.length > 0) {
+          // Si se encuentra la publicación, devolvemos el objeto con sus datos
+          return {
+            idPublicacion: res.rows.item(0).id_publicacion,
+            titulo: res.rows.item(0).titulo,
+            sinopsis: res.rows.item(0).sinopsis,
+            fechaPublicacion: res.rows.item(0).fechaPublicacion,
+            foto: res.rows.item(0).foto,
+            pdf: res.rows.item(0).pdf,
+            usuarioFK: res.rows.item(0).id_usuarioFK,
+            categoriaFK: res.rows.item(0).id_categoriaFK,
+          };
+        } else {
+          // Si no se encuentra ninguna publicación con ese ID
+          return null;
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener la publicación por ID:', error);
+        return null;
+      });
+  }
 
-/*-------------------- CONFIG.BASE DE DATOS ---------------------*/
+  /*-------------------- CONFIG.BASE DE DATOS ---------------------*/
   crearBD() {
     //verifico si la plataforma está lista
     this.platform.ready().then(() => {
       //crear la BD
-      this.sqlite.create({
-        name: 'biblioteca.db',
-        location: 'default'
-      }).then((db: SQLiteObject) => {
-        //guardo la conexión a BD en mi variable
-        this.database = db;
-        //llamo a la creación de las tablas
-        this.crearTablas();
-        this.presentAlert("Bd Creada con exito");
-      }).catch(e => {
-        this.presentAlert("Error en crear BD: " + e);
-      })
-    })
+      this.sqlite
+        .create({
+          name: 'biblioteca.db',
+          location: 'default',
+        })
+        .then((db: SQLiteObject) => {
+          //guardo la conexión a BD en mi variable
+          this.database = db;
+          //llamo a la creación de las tablas
+          this.crearTablas();
+          this.presentAlert('Bd Creada con exito');
+        })
+        .catch((e) => {
+          this.presentAlert('Error en crear BD: ' + e);
+        });
+    });
   }
 
   async crearTablas() {
     try {
       // Crear tablas en el orden correcto
-      await this.database.executeSql(this.tablaUsuario, []);           // 1
-      await this.database.executeSql(this.tablaCategoria, []);         // 2
-      await this.database.executeSql(this.tablaRol, []);               // 3
-      await this.database.executeSql(this.tablaPublicacion, []);       // 4
-      await this.database.executeSql(this.tablaComentario, []);        // 5
-      await this.database.executeSql(this.tablaFavorito, []);          // 6
-      await this.database.executeSql(this.tablaUsuarioRol, []);        // 7
+      await this.database.executeSql(this.tablaUsuario, []); // 1
+      await this.database.executeSql(this.tablaCategoria, []); // 2
+      await this.database.executeSql(this.tablaRol, []); // 3
+      await this.database.executeSql(this.tablaPublicacion, []); // 4
+      await this.database.executeSql(this.tablaComentario, []); // 5
+      await this.database.executeSql(this.tablaFavorito, []); // 6
+      await this.database.executeSql(this.tablaUsuarioRol, []); // 7
       await this.database.executeSql(this.tablaPreguntaRespuesta, []); // 8
-  
+
       // Insertar registros
       await this.database.executeSql(this.rolAdmin, []);
       await this.database.executeSql(this.rolModerador, []);
-      await this.database.executeSql(this.categoriaDrama,[]);
+      await this.database.executeSql(this.categoriaDrama, []);
       await this.database.executeSql(this.categoriaFantasia, []);
       await this.database.executeSql(this.categoriaRomance, []);
       await this.database.executeSql(this.categoriaTerror, []);
-  
+
       // Actualizar el estado de la base de datos
       this.isDBReady.next(true);
-      
+
       // Buscar datos iniciales
       this.buscarUsuario();
       this.buscarRol();
@@ -460,12 +575,11 @@ export class DbService {
       this.buscarUsuarioRol();
       this.buscarCategoria();
       this.buscarPublicacion();
-  
     } catch (e) {
       console.log('Error en crear Tabla:', e); // Mostrar error en consola para más detalles
-      this.presentAlert("Error en crear Tabla: " + JSON.stringify(e)); // Mostrar error detallado en un alert
+      this.presentAlert('Error en crear Tabla: ' + JSON.stringify(e)); // Mostrar error detallado en un alert
     }
-  }  
+  }
 
   async presentAlert(msj: string) {
     const alert = await this.alertController.create({

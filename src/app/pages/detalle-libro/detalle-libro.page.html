@@ -35,6 +35,12 @@
         <ion-icon slot="start" name="download-outline"></ion-icon>
         Descargar PDF
       </ion-button>
+
+      <!-- Botón para editar el libro, visible solo si el usuario es el propietario -->
+      <ion-button *ngIf="idUsuario === libro.usuarioFK" expand="block" color="primary" (click)="editarLibro()">
+        <ion-icon slot="start" name="create-outline"></ion-icon>
+        Editar Libro
+      </ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>

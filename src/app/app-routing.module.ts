@@ -30,6 +30,10 @@ const routes: Routes = [
     path: 'detalle-libro',
     loadChildren: () => import('./pages/detalle-libro/detalle-libro.module').then( m => m.DetalleLibroPageModule)
   },
+  {
+    path: 'editar-libro',
+    loadChildren: () => import('./pages/editar-libro/editar-libro.module').then( m => m.EditarLibroPageModule)
+  },
 
 
 

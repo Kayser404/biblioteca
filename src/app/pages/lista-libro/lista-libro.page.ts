@@ -41,9 +41,6 @@ export class ListaLibroPage implements OnInit, OnDestroy {
   private async actualizarListadoPublicacion() {
     const idUsuario = this.auth.getIdUsuario();
     const publicaciones = await this.db.obtenerPublicacionUsuario(idUsuario);
-    // Imprime el ID del usuario y las publicaciones obtenidas
-    console.log('ID Usuario:', idUsuario);
-    console.log('Publicaciones obtenidas:', publicaciones);
     this.publicaciones = publicaciones || []; // Asignar un array vacío si es null
     this.cd.detectChanges(); // Forzar la detección de cambios
   }
