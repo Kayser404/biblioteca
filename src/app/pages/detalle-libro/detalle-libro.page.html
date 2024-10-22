@@ -29,12 +29,13 @@
       <p><strong>Sinopsis:</strong> {{ libro.sinopsis }}</p>
       <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion }}</p>
       <p><strong>Categoría:</strong> {{ libro.categoriaFK }}</p>
+      <p><strong>pdf:</strong> {{ libro.pdf }}</p>
 
-      <!-- Botón para descargar el PDF del libro -->
-      <ion-button expand="block" fill="outline" [href]="libro.pdf" download>
-        <ion-icon slot="start" name="download-outline"></ion-icon>
-        Descargar PDF
-      </ion-button>
+      <!-- Botón para ver pdf -->
+      <ion-button expand="block" color="primary" (click)="verPDF()">
+        <ion-icon slot="start" name="document-outline"></ion-icon>
+        Leer PDF
+      </ion-button>      
 
       <!-- Botón para editar el libro, visible solo si el usuario es el propietario -->
       <ion-button *ngIf="idUsuario === libro.usuarioFK" expand="block" color="primary" (click)="editarLibro()">

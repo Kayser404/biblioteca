@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { DbService } from 'src/app/services/db.service';
+import { FileOpener } from '@capacitor-community/file-opener';
 
 @Component({
   selector: 'app-detalle-libro',
@@ -35,6 +36,23 @@ export class DetalleLibroPage implements OnInit {
       this.db.obtenerFavoritoUsuario(this.idUsuario).then(favoritos => {
         this.esFavorito = favoritos.some(fav => fav.idPublicacionFK === this.libro.idPublicacion);
       });
+    }
+  }
+
+  // Método para abrir el PDF usando FileOpener
+  async verPDF() {
+    if (this.libro?.pdf) {
+      try {
+        await FileOpener.open({
+          filePath: this.libro.pdf,
+          contentType: 'application/pdf'
+        });
+        console.log('PDF abierto correctamente.');
+      } catch (error) {
+        console.error('Error al abrir el archivo PDF:', error);
+      }
+    } else {
+      console.error('No se encontró la URI del PDF.');
     }
   }
 
