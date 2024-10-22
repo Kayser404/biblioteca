@@ -65,7 +65,7 @@ export class RegistrarLibroPage implements OnInit {
           const result = await Filesystem.writeFile({
             path: `pdfs/${fileName}`,
             data: base64Data.split(',')[1],
-            directory: Directory.Documents,
+            directory: Directory.Data,
             recursive: true
           });
 
