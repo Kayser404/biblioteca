@@ -9,7 +9,6 @@ import { Publicacion } from './publicacion';
 import { Comentarios } from './comentarios';
 import { Favorito } from './favorito';
 import { Rol } from './rol';
-import { UsuarioRol } from './usuario-rol';
 import { PreguntaRespuesta } from './pregunta-respuesta';
 
 @Injectable({
@@ -26,6 +25,13 @@ export class DbService {
   public database!: SQLiteObject;
 
   // Variables de creación de tablas
+
+  tablaRol: string = `
+    CREATE TABLE IF NOT EXISTS Rol (
+      id_rol INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombreRol TEXT
+    );
+  `;
   tablaUsuario: string = `
     CREATE TABLE IF NOT EXISTS Usuario (
       id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +39,9 @@ export class DbService {
       password TEXT,
       nombreUsuario TEXT,
       apellidoUsuario TEXT,
-      edadUsuario INTEGER
+      edadUsuario INTEGER,
+      id_rolFK INTEGER NULL,
+      FOREIGN KEY (id_rolFK) REFERENCES Rol(id_rol)
     );
   `;
 
@@ -41,13 +49,6 @@ export class DbService {
     CREATE TABLE IF NOT EXISTS Categoria (
       id_categoria INTEGER PRIMARY KEY AUTOINCREMENT,
       nombreCategoria TEXT
-    );
-  `;
-
-  tablaRol: string = `
-    CREATE TABLE IF NOT EXISTS Rol (
-      id_rol INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombreRol TEXT
     );
   `;
 
@@ -59,7 +60,9 @@ export class DbService {
       fechaPublicacion DATE,
       foto TEXT,
       pdf TEXT,
-      id_usuarioFK TEXT,
+      estado TEXT DEFAULT 'pendiente',
+      observacion TEXT DEFAULT NULL,
+      id_usuarioFK INTEGER,
       id_categoriaFK INTEGER,
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
       FOREIGN KEY (id_categoriaFK) REFERENCES Categoria(id_categoria)
@@ -71,7 +74,7 @@ export class DbService {
       id_comentario INTEGER PRIMARY KEY AUTOINCREMENT,
       fechaComentario DATE,
       texto TEXT,
-      id_usuarioFK TEXT,
+      id_usuarioFK INTEGER,
       id_publicacionFK INTEGER,
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
       FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id_publicacion)
@@ -81,20 +84,10 @@ export class DbService {
   tablaFavorito: string = `
     CREATE TABLE IF NOT EXISTS Favorito (
       id_favorito INTEGER PRIMARY KEY AUTOINCREMENT,
-      id_usuarioFK TEXT,
+      id_usuarioFK INTEGER,
       id_publicacionFK INTEGER,
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
       FOREIGN KEY (id_publicacionFK) REFERENCES Publicacion(id_publicacion)
-    );
-  `;
-
-  tablaUsuarioRol: string = `
-    CREATE TABLE IF NOT EXISTS UsuarioRol (
-      id_usuario_rol INTEGER PRIMARY KEY AUTOINCREMENT,
-      id_usuarioFK TEXT,
-      id_rolFK INTEGER,
-      FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
-      FOREIGN KEY (id_rolFK) REFERENCES Rol(id_rol)
     );
   `;
 
@@ -103,7 +96,7 @@ export class DbService {
       id_pregunta_respuesta INTEGER PRIMARY KEY AUTOINCREMENT,
       pregunta TEXT,
       respuesta TEXT,
-      id_usuarioFK TEXT,
+      id_usuarioFK INTEGER,
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario)
     );
   `;
@@ -111,8 +104,9 @@ export class DbService {
   // Insertar Roles
   rolAdmin: string =
     "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('1', 'admin')";
-  rolModerador: string =
-    "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('2', 'moderador')";
+
+  usuarioAdmin: string =
+    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('1', 'admin@example.com', 'admin123', 'Admin', 'User', 30, '1' );";
 
   //Insertar Categoria
   categoriaDrama: string =
@@ -125,13 +119,12 @@ export class DbService {
     "INSERT or IGNORE INTO Categoria (id_categoria, nombreCategoria) VALUES ('4', 'Romance')";
 
   // creacion observables para las tablas que se consultaran
+  listaRol = new BehaviorSubject([]);
   listaUsuarios = new BehaviorSubject([]);
   listaPublicacion = new BehaviorSubject([]);
   listaCategoria = new BehaviorSubject([]);
   listaComentario = new BehaviorSubject([]);
   listaFavorito = new BehaviorSubject([]);
-  listaRol = new BehaviorSubject([]);
-  listaUsuarioRol = new BehaviorSubject([]);
   listaPreguntaRespuesta = new BehaviorSubject([]);
 
   //observable para manipular el status de la BD
@@ -151,6 +144,30 @@ export class DbService {
   }
 
   /*------------- Consultas -------------------------------------*/
+  /* ROL */
+  fetchRol(): Observable<Rol[]> {
+    return this.listaRol.asObservable();
+  }
+  buscarRol() {
+    //retorno el resultado de la consulta
+    return this.database.executeSql('SELECT * FROM ROL', []).then((res) => {
+      //la consulta se realizó correctamente
+      //creamos una variable para almacenar los registros del select
+      let items: Rol[] = [];
+      //validar cuantos registros vienen en el select
+      if (res.rows.length > 0) {
+        //recorro la consulta dentro del res
+        for (var i = 0; i < res.rows.length; i++) {
+          //alamaceno los registros en items
+          items.push({
+            idRol: res.rows.item(i).id_rol,
+            nombreRol: res.rows.item(i).nombreRol,
+          });
+        }
+      }
+      this.listaRol.next(items as any);
+    });
+  }
   /* Usuario */
   fetchUsuario(): Observable<Usuarios[]> {
     return this.listaUsuarios.asObservable();
@@ -173,6 +190,7 @@ export class DbService {
             nombreUsuario: res.rows.item(i).nombreUsuario,
             apellidoUsuario: res.rows.item(i).apellidoUsuario,
             edadUsuario: res.rows.item(i).edadUsuario,
+            rolFK: res.rows.item(i).id_rolFK,
             // Agrega más propiedades aquí si las has definido en la tabla
           });
         }
@@ -220,13 +238,18 @@ export class DbService {
 
     return this.database
       .executeSql(
-        'SELECT id_usuario, email, password FROM Usuario WHERE email = ? AND password = ?',
+        'SELECT id_usuario, email, password , id_rolFK FROM Usuario WHERE email = ? AND password = ?',
         [email, password]
       )
+
       .then((res) => {
         if (res.rows.length > 0) {
-          // Retornar el primer usuario encontrado
-          const usuario = res.rows.item(0);
+          // Retornar el usuario con rol incluido
+          const usuario = {
+            id_usuario: res.rows.item(0).id_usuario,
+            email: res.rows.item(0).email,
+            rolFK: res.rows.item(0).id_rolFK,
+          };
           return usuario;
         } else {
           // No se encontraron resultados
@@ -240,7 +263,8 @@ export class DbService {
       });
   }
   obtenerUsuarioPorId(idUsuario: any): Promise<any> {
-    return this.database.executeSql('SELECT * FROM Usuario WHERE id_usuario = ?', [idUsuario])
+    return this.database
+      .executeSql('SELECT * FROM Usuario WHERE id_usuario = ?', [idUsuario])
       .then((res) => {
         if (res.rows.length > 0) {
           return {
@@ -260,23 +284,24 @@ export class DbService {
         console.error('Error al obtener los datos del usuario:', error);
         return null;
       });
-  } 
+  }
   actualizarUsuario(usuario: any): Promise<any> {
     const query = `
       UPDATE Usuario 
       SET nombreUsuario = ?, apellidoUsuario = ?, email = ?, edadUsuario = ?
       WHERE id_usuario = ?;
     `;
-    
+
     const params = [
       usuario.nombreUsuario,
       usuario.apellidoUsuario,
       usuario.email,
       usuario.edadUsuario,
-      usuario.idUsuario
+      usuario.idUsuario,
     ];
-  
-    return this.database.executeSql(query, params)
+
+    return this.database
+      .executeSql(query, params)
       .then(() => {
         console.log('Usuario actualizado correctamente.');
         return true;
@@ -285,87 +310,8 @@ export class DbService {
         console.error('Error al actualizar el usuario:', error);
         return false;
       });
-  }  
+  }
 
-  /* ROL */
-  fetchRol(): Observable<Rol[]> {
-    return this.listaRol.asObservable();
-  }
-  buscarRol() {
-    //retorno el resultado de la consulta
-    return this.database.executeSql('SELECT * FROM ROL', []).then((res) => {
-      //la consulta se realizó correctamente
-      //creamos una variable para almacenar los registros del select
-      let items: Rol[] = [];
-      //validar cuantos registros vienen en el select
-      if (res.rows.length > 0) {
-        //recorro la consulta dentro del res
-        for (var i = 0; i < res.rows.length; i++) {
-          //alamaceno los registros en items
-          items.push({
-            idRol: res.rows.item(i).id_rol,
-            nombreRol: res.rows.item(i).nombreRol,
-          });
-        }
-      }
-      this.listaRol.next(items as any);
-    });
-  }
-  /* UsuarioRoles */
-  fetchUsuarioRol(): Observable<UsuarioRol[]> {
-    return this.listaUsuarioRol.asObservable();
-  }
-  buscarUsuarioRol() {
-    //retorno el resultado de la consulta
-    return this.database
-      .executeSql('SELECT * FROM UsuarioRol', [])
-      .then((res) => {
-        //la consulta se realizó correctamente
-        //creamos una variable para almacenar los registros del select
-        let items: UsuarioRol[] = [];
-        //validar cuantos registros vienen en el select
-        if (res.rows.length > 0) {
-          //recorro la consulta dentro del res
-          for (var i = 0; i < res.rows.length; i++) {
-            //alamaceno los registros en items
-            items.push({
-              idUsuarioRol: res.rows.item(i).id_usuario_rol,
-              usuarioFK: res.rows.item(i).id_usuarioFK,
-              rolFK: res.rows.item(i).id_rolFK,
-            });
-          }
-        }
-        this.listaUsuarioRol.next(items as any);
-      });
-  }
-  agregarUsuarioRol(usuarioFK: any, rolFK: any) {
-    console.log('Intentando agregar roles para ID de usuario:', usuarioFK);
-    return this.database
-      .executeSql(
-        'INSERT INTO UsuarioRol (id_usuarioFK, id_rolFK) VALUES (?, ?)',
-        [usuarioFK, rolFK]
-      )
-      .then((res) => {
-        this.buscarUsuarioRol();
-      });
-  }
-  obtenerUsuarioRol(usuarioFK: any) {
-    return this.database
-      .executeSql('SELECT id_rolFK FROM UsuarioRol WHERE id_usuarioFK = ?', [
-        usuarioFK,
-      ])
-      .then((res) => {
-        if (res.rows.length > 0) {
-          const roles = [];
-          for (let i = 0; i < res.rows.length; i++) {
-            roles.push(res.rows.item(i).id_rolFK);
-          }
-          return roles; // Retornar un arreglo de roles
-        } else {
-          return null;
-        }
-      });
-  }
   /* PreguntaRespuesta */
   fetchPreguntaRespuesta(): Observable<PreguntaRespuesta[]> {
     return this.listaPreguntaRespuesta.asObservable();
@@ -459,6 +405,8 @@ export class DbService {
               fechaPublicacion: res.rows.item(i).fechaPublicacion,
               foto: res.rows.item(i).foto,
               pdf: res.rows.item(i).pdf,
+              estado: res.rows.item(i).estado,
+              observacion: res.rows.item(i).observacion,
               usuarioFK: res.rows.item(i).id_usuarioFK,
               categoriaFK: res.rows.item(i).id_categoriaFK,
             });
@@ -476,7 +424,7 @@ export class DbService {
     usuarioFK: any,
     categoriaFK: any
   ) {
-    console.log('Intentando agregregar publicacion');
+    console.log('Intentando agregar publicación');
     return this.database
       .executeSql(
         'INSERT INTO Publicacion (titulo, sinopsis, fechaPublicacion, foto, pdf, id_usuarioFK, id_categoriaFK) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -492,8 +440,12 @@ export class DbService {
       )
       .then((res) => {
         this.buscarPublicacion();
+        console.log(
+          'Publicación agregada correctamente con estado predeterminado'
+        );
       });
   }
+
   obtenerPublicacionUsuario(idUsuario: any) {
     return this.database
       .executeSql('SELECT * FROM Publicacion WHERE id_usuarioFK = ?', [
@@ -510,6 +462,7 @@ export class DbService {
               fechaPublicacion: res.rows.item(i).fechaPublicacion,
               foto: res.rows.item(i).foto,
               pdf: res.rows.item(i).pdf,
+              estado: res.rows.item(i).estado,
               usuarioFK: res.rows.item(i).id_usuarioFK,
               categoriaFK: res.rows.item(i).id_categoriaFK,
             });
@@ -577,6 +530,47 @@ export class DbService {
         return null;
       });
   }
+  // Método para modificar el estado de la publicación
+  aprobarRechazarPublicacionPorId(
+    idPublicacion: number,
+    estado: string,
+    observacion: string,
+  ): Promise<boolean> {
+    return this.database
+      .executeSql(
+        'UPDATE Publicacion SET estado = ?, observacion = ? WHERE id_publicacion = ?;',
+        [estado, observacion, idPublicacion]
+      )
+      .then(() => {
+        console.log(`Publicación ${estado} correctamente`);
+        this.buscarPublicacion(); // Refresca la lista de publicaciones después de la actualización
+        return true;
+      })
+      .catch((error) => {
+        console.error(
+          `Error al cambiar el estado de la publicación a ${estado}:`,
+          error
+        );
+        return false;
+      });
+  }
+  // Metodo para eliminar publicacion
+  eliminarPublicacionPorId(idPublicacion: number): Promise<boolean> {
+    return this.database
+      .executeSql('DELETE FROM Publicacion WHERE id_publicacion = ?;', [
+        idPublicacion,
+      ])
+      .then(() => {
+        console.log('Publicación eliminada correctamente');
+        this.buscarPublicacion(); // Refresca la lista de publicaciones después de eliminar
+        return true;
+      })
+      .catch((error) => {
+        console.error('Error al eliminar la publicación:', error);
+        return false;
+      });
+  }
+
   /* Favorito */
   fetchFavorito(): Observable<Favorito[]> {
     return this.listaFavorito.asObservable();
@@ -627,7 +621,10 @@ export class DbService {
   // Método para eliminar un libro de los favoritos de un usuario
   quitarDeFavoritos(idUsuario: any, idPublicacion: any): Promise<any> {
     return this.database
-      .executeSql('DELETE FROM Favorito WHERE id_usuarioFK = ? AND id_publicacionFK = ?;', [idUsuario, idPublicacion])
+      .executeSql(
+        'DELETE FROM Favorito WHERE id_usuarioFK = ? AND id_publicacionFK = ?;',
+        [idUsuario, idPublicacion]
+      )
       .then(() => {
         console.log('Libro eliminado de favoritos.');
         this.buscarFavorito();
@@ -692,22 +689,23 @@ export class DbService {
   async crearTablas() {
     try {
       // Crear tablas en el orden correcto
-      await this.database.executeSql(this.tablaUsuario, []); // 1
-      await this.database.executeSql(this.tablaCategoria, []); // 2
-      await this.database.executeSql(this.tablaRol, []); // 3
+      await this.database.executeSql(this.tablaRol, []); // 1
+      await this.database.executeSql(this.tablaUsuario, []); // 2
+      await this.database.executeSql(this.tablaCategoria, []); // 3
       await this.database.executeSql(this.tablaPublicacion, []); // 4
       await this.database.executeSql(this.tablaComentario, []); // 5
       await this.database.executeSql(this.tablaFavorito, []); // 6
-      await this.database.executeSql(this.tablaUsuarioRol, []); // 7
-      await this.database.executeSql(this.tablaPreguntaRespuesta, []); // 8
+      await this.database.executeSql(this.tablaPreguntaRespuesta, []); // 7
 
       // Insertar registros
       await this.database.executeSql(this.rolAdmin, []);
-      await this.database.executeSql(this.rolModerador, []);
       await this.database.executeSql(this.categoriaDrama, []);
       await this.database.executeSql(this.categoriaFantasia, []);
       await this.database.executeSql(this.categoriaRomance, []);
       await this.database.executeSql(this.categoriaTerror, []);
+
+      // usuario de prueba
+      await this.database.executeSql(this.usuarioAdmin, []);
 
       // Actualizar el estado de la base de datos
       this.isDBReady.next(true);
@@ -716,11 +714,9 @@ export class DbService {
       this.buscarUsuario();
       this.buscarRol();
       this.buscarPreguntaRespuesta();
-      this.buscarUsuarioRol();
       this.buscarCategoria();
       this.buscarPublicacion();
       this.buscarFavorito();
-
     } catch (e) {
       console.log('Error en crear Tabla:', e); // Mostrar error en consola para más detalles
       this.presentAlert('Error en crear Tabla: ' + JSON.stringify(e)); // Mostrar error detallado en un alert
@@ -729,7 +725,7 @@ export class DbService {
 
   async presentAlert(msj: string) {
     const alert = await this.alertController.create({
-      header: 'Usuarios, saluden a Backend',
+      header: 'Usuarios, saluden a Blackend',
       message: msj,
       buttons: ['OK'],
     });

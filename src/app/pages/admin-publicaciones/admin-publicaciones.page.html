@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/panel-administracion"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Publicaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Gestión de Publicaciones</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Lista de Publicaciones -->
+  <ion-list>
+    <ion-card *ngFor="let publicacion of publicaciones">
+      <ion-card-header>
+        <ion-card-title>{{ publicacion.titulo }}</ion-card-title>
+        <ion-card-subtitle>{{ publicacion.sinopsis }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- <p>Publicado por: {{ publicacion.usuario }}</p> -->
+        <p>Fecha: {{ publicacion.fechaPublicacion | date }}</p>
+        <!-- <p>Categoría: {{ publicacion.categoria }}</p> -->
+      </ion-card-content>
+      <ion-item>
+        <ion-button color="primary" (click)="verDetalles(publicacion)">Ver</ion-button>
+        <ion-button color="secondary" (click)="aprobarPublicacion(publicacion)">Aprobar</ion-button>
+        <ion-button color="danger" (click)="rechazarPublicacion(publicacion)">Rechazar</ion-button>
+        <ion-button color="" (click)="eliminarPublicacion(publicacion)">Eliminar</ion-button>
+      </ion-item>
+    </ion-card>
+  </ion-list>
+</ion-content>

@@ -29,6 +29,12 @@
         <ion-label>Perfil</ion-label>
       </ion-item>
 
+      <!-- Botón solo visible para administradores -->
+      <ion-item *ngIf="isAdmin" (click)="navigateTo('panel-administracion')">
+        <ion-icon name="settings-outline" slot="start"></ion-icon>
+        <ion-label>Panel de Administración</ion-label>
+      </ion-item>
+
       <!-- Cerrar sesión -->
       <ion-item (click)="logout()">
         <ion-icon name="log-out-outline" slot="start"></ion-icon>

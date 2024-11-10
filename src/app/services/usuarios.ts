@@ -5,4 +5,5 @@ export class Usuarios {
     nombreUsuario = "";
     apellidoUsuario = "";
     edadUsuario = "";
+    rolFK = "";
 }

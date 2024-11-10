@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 import { addIcons } from 'ionicons';
 import { personCircle, personCircleOutline, sunny, sunnyOutline } from 'ionicons/icons';
 
@@ -11,10 +12,12 @@ import { personCircle, personCircleOutline, sunny, sunnyOutline } from 'ionicons
 })
 export class SidebarComponent implements OnInit{
   themeToggle = false;
+  isAdmin: boolean = false;
 
   constructor(
     private menu: MenuController,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     addIcons({ personCircle, personCircleOutline, sunny, sunnyOutline });
   }
@@ -29,6 +32,7 @@ export class SidebarComponent implements OnInit{
     this.menu.close();
     // Eliminar id del usuario del localstorage
     localStorage.removeItem('idUsuario');
+    localStorage.removeItem('rolId');
     // Aquí va la lógica de cierre de sesión, como borrar tokens o navegar a la pantalla de login
     console.log('Cerrar sesión');
     this.router.navigate(['/login']); // Redirige a la página de login
@@ -40,6 +44,8 @@ export class SidebarComponent implements OnInit{
   }
   
   ngOnInit() {
+    this.isAdmin = this.authService.isAdmin(); 
+
     // Use matchMedia to check the user preference
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 

@@ -50,6 +50,7 @@ export class LoginPage implements OnInit {
             if (usuario) {
               // Aquí eliminamos la parte de roles y almacenamientos innecesarios
               localStorage.setItem('idUsuario', usuario.id_usuario);
+              localStorage.setItem('rolId', usuario.rolFK);
   
               // Borrar inputs del formulario
               this.loginForm.patchValue({

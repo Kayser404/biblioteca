@@ -22,7 +22,8 @@ const routes: Routes = [
   {
     path: 'registrar-libro',
     loadChildren: () => import('./pages/registrar-libro/registrar-libro.module').then( m => m.RegistrarLibroPageModule)
-  },  {
+  },
+  {
     path: 'lista-libro',
     loadChildren: () => import('./pages/lista-libro/lista-libro.module').then( m => m.ListaLibroPageModule)
   },
@@ -45,6 +46,14 @@ const routes: Routes = [
   {
     path: 'ver-pdf',
     loadChildren: () => import('./pages/ver-pdf/ver-pdf.module').then( m => m.VerPdfPageModule)
+  },
+  {
+    path: 'panel-administracion',
+    loadChildren: () => import('./pages/panel-administracion/panel-administracion.module').then( m => m.PanelAdministracionPageModule)
+  },
+  {
+    path: 'admin-publicaciones',
+    loadChildren: () => import('./pages/admin-publicaciones/admin-publicaciones.module').then( m => m.AdminPublicacionesPageModule)
   },
 
 

@@ -6,6 +6,8 @@ export class Publicacion {
     fechaPublicacion = "";
     foto = "";
     pdf = "";
+    estado = "";
+    observacion ="";
     usuarioFK = "";
     categoriaFK = "";
 

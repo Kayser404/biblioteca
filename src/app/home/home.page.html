@@ -4,22 +4,24 @@
   <div class="catalog-container">
     <ion-grid>
       <ion-row>
-        <!-- Repetir este ion-col para cada libro en el catálogo -->
-        <ion-col size="12" size-md="6" size-lg="4" *ngFor="let libro of libros">
-          <ion-card>
-            <img [src]="libro.foto" alt="Portada de {{ libro.titulo }}" class="book-cover"/>
-            <ion-card-header>
-              <ion-card-title>{{ libro.titulo }}</ion-card-title>
-              <ion-card-subtitle>{{ libro.categoriaFK }}</ion-card-subtitle>
-            </ion-card-header>
-            <ion-card-content>
-              <p>{{ libro.sinopsis | slice:0:100 }}...</p>
-            </ion-card-content>
-            <ion-button expand="block" color="primary" (click)="verDetalles(libro)">
-              Ver más
-            </ion-button>
-          </ion-card>
-        </ion-col>
+        <!-- Usar ng-container para aplicar el *ngIf -->
+        <ng-container *ngFor="let libro of libros">
+          <ion-col *ngIf="libro.estado === 'aprobado'" size="12" size-md="6" size-lg="4">
+            <ion-card>
+              <img [src]="libro.foto" alt="Portada de {{ libro.titulo }}" class="book-cover"/>
+              <ion-card-header>
+                <ion-card-title>{{ libro.titulo }}</ion-card-title>
+                <ion-card-subtitle>{{ libro.categoriaFK }}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <p>{{ libro.sinopsis | slice:0:100 }}...</p>
+              </ion-card-content>
+              <ion-button expand="block" color="primary" (click)="verDetalles(libro)">
+                Ver más
+              </ion-button>
+            </ion-card>
+          </ion-col>
+        </ng-container>
       </ion-row>
     </ion-grid>
   </div>
