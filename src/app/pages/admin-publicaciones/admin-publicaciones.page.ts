@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DbService } from 'src/app/services/db.service';
 import { Publicacion } from 'src/app/services/publicacion';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-publicaciones',
@@ -10,7 +11,7 @@ import { Publicacion } from 'src/app/services/publicacion';
 export class AdminPublicacionesPage implements OnInit {
   publicaciones: Publicacion[] = [];
 
-  constructor(private db: DbService) {}
+  constructor(private db: DbService, private router: Router) {}
 
   ngOnInit() {
     this.db.fetchPublicaciones().subscribe((data) => {
@@ -20,31 +21,9 @@ export class AdminPublicacionesPage implements OnInit {
   }
 
   // Ver detalles de la publicación
-  verDetalles(publicacion: Publicacion) {
-    console.log('Detalles de publicación:', publicacion);
+  verDetalleLibro(libro: any) {
+    this.router.navigate(['/detalle-libro'], { state: { libro } });
   }
 
-  // Aprobar una publicación
-  async aprobarPublicacion(publicacion: Publicacion) {
-    await this.db.aprobarRechazarPublicacionPorId(
-      Number(publicacion.idPublicacion),
-      'aprobado'
-    );
-    this.db.buscarPublicacion(); // Refrescar la lista
-  }
-
-  // Rechazar una publicación
-  async rechazarPublicacion(publicacion: Publicacion) {
-    await this.db.aprobarRechazarPublicacionPorId(
-      Number(publicacion.idPublicacion),
-      'rechazado'
-    );
-    this.db.buscarPublicacion(); // Refrescar la lista
-  }
-
-  // Eliminar una publicación
-  async eliminarPublicacion(publicacion: Publicacion) {
-    await this.db.eliminarPublicacionPorId(Number(publicacion.idPublicacion));
-    this.db.buscarPublicacion(); // Refrescar la lista
-  }
+  
 }

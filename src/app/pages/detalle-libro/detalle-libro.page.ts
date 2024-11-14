@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { DbService } from 'src/app/services/db.service';
 import { FileOpener } from '@capacitor-community/file-opener';
+import { Publicacion } from 'src/app/services/publicacion';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-detalle-libro',
@@ -12,17 +14,26 @@ import { FileOpener } from '@capacitor-community/file-opener';
 export class DetalleLibroPage implements OnInit {
   libro: any;
   idUsuario: string | null = null;
+  isAdmin: boolean = false;
   esFavorito: boolean = false;
+  observacionForm: FormGroup;
 
   constructor(
     private router: Router,
+    private fb: FormBuilder,
     private auth: AuthService,
     private db: DbService
-  ) {}
+  ) {
+    this.observacionForm = this.fb.group({
+      observacion: ['', Validators.required],
+    });
+  }
 
   ngOnInit() {
-    // Obtener el ID del usuario desde localStorage
+    // Obtener el ID del usuario y rol desde localStorage
     this.idUsuario = this.auth.getIdUsuario();
+    this.isAdmin = this.auth.isAdmin();
+
     // Verificar que la navegación actual tenga el estado y que el objeto 'libro' exista
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras?.state && navigation.extras.state['libro']) {
@@ -102,4 +113,32 @@ export class DetalleLibroPage implements OnInit {
     }
   }
   
+  // Aprobar una publicación
+  async aprobarPublicacion(publicacion: Publicacion) {
+    const observacion = this.observacionForm.value.observacion
+
+    await this.db.aprobarRechazarPublicacionPorId(
+      Number(publicacion.idPublicacion),
+      'aprobado',
+      observacion
+    );
+    this.db.buscarPublicacion(); // Refrescar la lista
+  }
+
+  // Rechazar una publicación
+  async rechazarPublicacion(publicacion: Publicacion) {
+    const observacion = this.observacionForm.value.observacion
+
+    await this.db.aprobarRechazarPublicacionPorId(
+      Number(publicacion.idPublicacion),
+      'rechazado',
+      observacion
+    );
+    this.db.buscarPublicacion(); // Refrescar la lista
+  }
+  // Eliminar una publicación
+  async eliminarPublicacion(publicacion: Publicacion) {
+    await this.db.eliminarPublicacionPorId(Number(publicacion.idPublicacion));
+    this.db.buscarPublicacion(); // Refrescar la lista
+  }
 }

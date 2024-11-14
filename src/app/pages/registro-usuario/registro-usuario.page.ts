@@ -25,9 +25,12 @@ export class RegistroUsuarioPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       repPassword: ['', Validators.required],
-      nombreUsuario: ['', Validators.required],
-      apellidoUsuario: ['', Validators.required],
-      edadUsuario: ['', [Validators.required, Validators.min(0)]],
+      nombreUsuario: ['', Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')],
+      apellidoUsuario: ['', Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')],
+      fechaNacimiento: ['',
+        [Validators.required,
+        this.edadMayor,
+        Validators.pattern(/^(\d{2}-\d{2}-\d{4})$/)]],
       pregunta: ['', Validators.required],
       respuesta: ['', Validators.required],
     }, { validator: this.passwordsMatchValidator });
@@ -49,7 +52,7 @@ export class RegistroUsuarioPage implements OnInit {
     const password = this.registroForm.value.password;
     const nombreUsuario = this.registroForm.value.nombreUsuario;
     const apellidoUsuario = this.registroForm.value.apellidoUsuario;
-    const edadUsuario = this.registroForm.value.edadUsuario;
+    const fechaNacimiento = this.registroForm.value.fechaNacimiento;
     const pregunta = this.registroForm.value.pregunta;
     const respuesta = this.registroForm.value.respuesta;
 
@@ -58,7 +61,7 @@ export class RegistroUsuarioPage implements OnInit {
       console.log('Formulario válido, enviando los siguientes datos:', this.registroForm.value);
 
       // Aquí iría la lógica para enviar los datos a la base de datos
-      this.db.registrarUsuario(email, password, nombreUsuario, apellidoUsuario, edadUsuario)
+      this.db.registrarUsuario(email, password, nombreUsuario, apellidoUsuario, fechaNacimiento)
         .then(idUsuario => {
           return this.db.agregarPreguntaRespuesta(pregunta, respuesta, idUsuario)
             .then(() => {
@@ -74,4 +77,122 @@ export class RegistroUsuarioPage implements OnInit {
       console.log('Formulario inválido');
     }
   }
+  // Validación Fecha de Nacimiento
+  edadMayor(control: any) {
+    const fechaNacimiento = control.value;
+    if (!fechaNacimiento) {
+      return null;
+    }
+
+    const partesFecha = fechaNacimiento.split('-');
+    const dia = parseInt(partesFecha[0], 10);
+    const mes = parseInt(partesFecha[1], 10)-1;
+    const anio = parseInt(partesFecha[2], 10);
+
+    const fechaNac = new Date(anio, mes, dia);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+
+    if (hoy.getMonth() + 1 < mes || (hoy.getMonth() + 1 === mes && hoy.getDate() < dia)) {
+      edad--;
+    }
+
+    if (edad < 18) {
+      return { edadMenor: true };
+    }
+    return null;
+  }
+
+  getFechaNacimientoMessage() {
+    const fechaNacimientoControl = this.registroForm.controls['fechaNacimiento'];
+
+    if (fechaNacimientoControl.hasError('required')) {
+      return 'Este campo es requerido.';
+    }
+    if (fechaNacimientoControl.hasError('pattern')) {
+      return 'El formato de la fecha de nacimiento debe ser DD-MM-AAAA.';
+    }
+    if (fechaNacimientoControl.hasError('edadMenor')) {
+      return 'Debes ser mayor de 18 años.';
+    }
+    return '';
+  }
+
+  getEmailMessage() {
+    const emailControl = this.registroForm.controls['email'];
+
+    if (emailControl.hasError('required')) {
+      return 'Este campo es requerido.';
+    }
+    if (emailControl.hasError('email')) {
+      return 'Formato de email inválido.';
+    }
+    if (emailControl.hasError('pattern')) {
+      return 'Formato de email inválido.';
+    }
+    return '';
+  }
+
+  // Validación Nombre
+  getNombresMessage() {
+    const nombresControl = this.registroForm.get('nombreUsuario');
+  
+    if (nombresControl && nombresControl.hasError('required')) {
+      return 'Este campo es requerido.';
+    }
+    if (nombresControl && nombresControl.hasError('pattern')) {
+      return 'Ingrese nombres válidos.';
+    }
+    return '';
+  }
+  
+  // Validación Apellido
+  getApellidosMessage() {
+    const apellidosControl = this.registroForm.get('apellidoUsuario');
+  
+    if (apellidosControl && apellidosControl.hasError('required')) {
+      return 'Este campo es requerido.';
+    }
+    if (apellidosControl && apellidosControl.hasError('pattern')) {
+      return 'Ingrese apellidos válidos.';
+    }
+    return '';
+  }  
+
+  // Validación Contraseña
+  getContrasenaMessage() {
+    const contrasenaControl = this.registroForm.controls['password'];
+
+    if (contrasenaControl.hasError('required')) {
+      return 'Este campo es requerido.';
+    }
+    if (contrasenaControl.hasError('minLength')) {
+      return 'La contraseña debe tener al menos 6 caracteres.';
+    }
+
+    if (contrasenaControl.hasError('maxLength')) {
+      return 'La contraseña debe tener como máximo 25 caracteres.';
+    }
+    if (contrasenaControl.hasError('pattern')) {
+      return 'La contraseña debe contener al menos una letra minúscula, una letra mayúscula y un carácter especial.';
+    }
+
+    return '';
+  }
+
+  // Validación Repetir Contraseña
+  getRepetirContrasenaMessage() {
+    const contrasenaControl = this.registroForm.controls['password'];
+    const repetirContrasenaControl = this.registroForm.controls['repPassword'];
+
+    if (repetirContrasenaControl.hasError('required')) {
+      return 'Este campo es requerido.';
+    }
+
+    if (repetirContrasenaControl.value !== contrasenaControl.value) {
+      return 'Las contraseñas no coinciden.';
+    }
+    return '';
+  }
+
 }

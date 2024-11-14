@@ -6,45 +6,85 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="registroForm" (ngSubmit)="enviar()">
-
     <ion-item>
       <ion-label position="floating">Correo Electrónico</ion-label>
       <ion-input type="email" formControlName="email"></ion-input>
     </ion-item>
+    <span
+      *ngIf="registroForm.get('email')?.invalid && registroForm.get('email')?.touched"
+    >
+      {{ getEmailMessage() }}
+    </span>
 
     <ion-item>
       <ion-label position="floating">Contraseña</ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
+    <span
+      *ngIf="registroForm.get('password')?.invalid && registroForm.get('password')?.touched"
+    >
+      {{ getContrasenaMessage() }}
+    </span>
 
     <ion-item>
       <ion-label position="floating">Confirmar Contraseña</ion-label>
       <ion-input type="password" formControlName="repPassword"></ion-input>
     </ion-item>
+    <span
+      *ngIf="registroForm.get('repPassword')?.invalid && registroForm.get('repPassword')?.touched"
+    >
+      {{ getRepetirContrasenaMessage() }}
+    </span>
 
     <ion-item>
       <ion-label position="floating">Nombre de Usuario</ion-label>
       <ion-input type="text" formControlName="nombreUsuario"></ion-input>
     </ion-item>
+    <span
+      *ngIf="registroForm.get('nombreUsuario')?.invalid && registroForm.get('nombreUsuario')?.touched"
+    >
+      {{ getNombresMessage() }}
+    </span>
 
     <ion-item>
       <ion-label position="floating">Apellido</ion-label>
       <ion-input type="text" formControlName="apellidoUsuario"></ion-input>
     </ion-item>
+    <span
+      *ngIf="registroForm.get('apellidoUsuario')?.invalid && registroForm.get('apellidoUsuario')?.touched"
+    >
+      {{ getApellidosMessage() }}
+    </span>
 
+    <!-- Fecha de Nacimiento -->
     <ion-item>
-      <ion-label position="floating">Edad</ion-label>
-      <ion-input type="number" formControlName="edadUsuario"></ion-input>
+      <ion-label position="floating">Fecha de Nacimiento </ion-label>
+      <ion-input
+        placeholder="DD-MM-AAAA"
+        type="text"
+        formControlName="fechaNacimiento"
+      ></ion-input>
     </ion-item>
+    <span
+      *ngIf="registroForm.get('fechaNacimiento')?.invalid && registroForm.get('fechaNacimiento')?.touched"
+    >
+      {{ getFechaNacimientoMessage() }}
+    </span>
 
     <!-- Preguntas de seguridad -->
     <ion-item>
       <ion-label>Pregunta de Seguridad</ion-label>
       <ion-select formControlName="pregunta">
-        <ion-select-option *ngFor="let pregunta of preguntasSeguridad" [value]="pregunta">{{ pregunta }}</ion-select-option>
+        <ion-select-option
+          *ngFor="let pregunta of preguntasSeguridad"
+          [value]="pregunta"
+          >{{ pregunta }}</ion-select-option
+        >
       </ion-select>
     </ion-item>
-    <div *ngIf="registroForm.get('pregunta')?.invalid && (registroForm.get('pregunta')?.touched || registroForm.get('pregunta')?.dirty)">
+    <div
+      *ngIf="registroForm.get('pregunta')?.invalid && (registroForm.get('pregunta')?.touched || registroForm.get('pregunta')?.dirty)"
+    >
       <ion-text color="danger">Selecciona una pregunta de seguridad</ion-text>
     </div>
 
@@ -52,11 +92,14 @@
       <ion-label position="floating">Respuesta</ion-label>
       <ion-input type="text" formControlName="respuesta"></ion-input>
     </ion-item>
-    <div *ngIf="registroForm.get('respuesta')?.invalid && (registroForm.get('respuesta')?.touched || registroForm.get('respuesta')?.dirty)">
+    <div
+      *ngIf="registroForm.get('respuesta')?.invalid && (registroForm.get('respuesta')?.touched || registroForm.get('respuesta')?.dirty)"
+    >
       <ion-text color="danger">La respuesta es requerida</ion-text>
     </div>
 
-    <ion-button expand="full" type="submit" [disabled]="registroForm.invalid">Registrar</ion-button>
-
+    <ion-button expand="full" type="submit" [disabled]="registroForm.invalid"
+      >Registrar</ion-button
+    >
   </form>
 </ion-content>

@@ -16,7 +16,10 @@
 
   <!-- Imagen del libro -->
   <ion-card>
-    <ion-img [src]="libro.foto || 'assets/img/default-book.png'" alt="{{ libro.titulo }}"></ion-img>
+    <ion-img
+      [src]="libro.foto || 'assets/img/default-book.png'"
+      alt="{{ libro.titulo }}"
+    ></ion-img>
   </ion-card>
 
   <!-- Detalles del libro -->
@@ -25,29 +28,83 @@
       <ion-card-title>{{ libro.titulo }}</ion-card-title>
     </ion-card-header>
 
-    <ion-card-content>
+    <div>
       <p><strong>Sinopsis:</strong> {{ libro.sinopsis }}</p>
       <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion }}</p>
       <p><strong>Categoría:</strong> {{ libro.categoriaFK }}</p>
-      <p><strong>pdf:</strong> {{ libro.pdf }}</p>
+      <p><strong>PDF:</strong> {{ libro.pdf }}</p>
+    </div>
 
-      <!-- Botón para ver pdf -->
-      <ion-button expand="block" color="primary" (click)="verPDF()">
-        <ion-icon slot="start" name="document-outline"></ion-icon>
-        Leer PDF
-      </ion-button>      
+    <!-- Botón para ver pdf -->
+    <ion-button expand="block" color="primary" (click)="verPDF()">
+      <ion-icon slot="start" name="document-outline"></ion-icon>
+      Leer PDF
+    </ion-button>
 
-      <!-- Botón para editar el libro, visible solo si el usuario es el propietario -->
-      <ion-button *ngIf="idUsuario === libro.usuarioFK" expand="block" color="primary" (click)="editarLibro()">
-        <ion-icon slot="start" name="create-outline"></ion-icon>
-        Editar Libro
+    <!-- Botón para editar el libro, visible solo si el usuario es el propietario -->
+    <ion-button
+      *ngIf="idUsuario === libro.usuarioFK"
+      expand="block"
+      color="primary"
+      (click)="editarLibro()"
+    >
+      <ion-icon slot="start" name="create-outline"></ion-icon>
+      Editar Libro
+    </ion-button>
+
+    <!-- Botón para agregar o quitar de favoritos -->
+    <ion-button
+      *ngIf="idUsuario !== libro.usuarioFK"
+      expand="block"
+      color="secondary"
+      (click)="toggleFavorito()"
+    >
+      <ion-icon
+        slot="start"
+        [name]="esFavorito ? 'heart' : 'heart-outline'"
+      ></ion-icon>
+      {{ esFavorito ? 'Quitar de Favoritos' : 'Agregar a Favoritos' }}
+    </ion-button>
+
+    <!-- Formulario para dejar observación -->
+    <form [formGroup]="observacionForm">
+      <ion-item *ngIf="isAdmin && idUsuario !== libro.usuarioFK">
+        <ion-label position="floating">Observación</ion-label>
+        <ion-textarea 
+          formControlName="observacion" 
+          required
+          [disabled]="!observacionForm.valid">
+          Observación o comentario para esta publicación.
+        </ion-textarea>
+      </ion-item>
+
+      <!-- Botones para aprobar y rechazar publicación -->
+      <ion-button
+        *ngIf="isAdmin && idUsuario !== libro.usuarioFK"
+        expand="block"
+        color="secondary"
+        type="submit"
+        [disabled]="!observacionForm.valid"
+        (click)="aprobarPublicacion(libro)"
+      >
+        Aprobar
       </ion-button>
 
-      <!-- Botón para agregar o quitar de favoritos -->
-      <ion-button *ngIf="idUsuario !== libro.usuarioFK" expand="block" color="secondary" (click)="toggleFavorito()">
-        <ion-icon slot="start" [name]="esFavorito ? 'heart' : 'heart-outline'"></ion-icon>
-        {{ esFavorito ? 'Quitar de Favoritos' : 'Agregar a Favoritos' }}
+      <ion-button
+        *ngIf="isAdmin && idUsuario !== libro.usuarioFK"
+        expand="block"
+        color="secondary"
+        type="submit"
+        [disabled]="!observacionForm.valid"
+        (click)="rechazarPublicacion(libro)"
+      >
+        Rechazar
       </ion-button>
-    </ion-card-content>
+      <ion-button 
+        *ngIf="idUsuario === libro.usuarioFK"
+        color="" (click)="eliminarPublicacion(libro)">
+        Eliminar
+      </ion-button>
+    </form>
   </ion-card>
 </ion-content>
