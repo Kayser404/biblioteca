@@ -23,17 +23,29 @@ export class RegistroUsuarioPage implements OnInit {
     // Inicializamos el formulario
     this.registroForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(20),
+        Validators.pattern('^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};:\'",.<>/?]).*$')
+      ]],
       repPassword: ['', Validators.required],
-      nombreUsuario: ['', Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')],
-      apellidoUsuario: ['', Validators.required, Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')],
-      fechaNacimiento: ['',
-        [Validators.required,
+      nombreUsuario: ['', [
+        Validators.required, 
+        Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')
+      ]],
+      apellidoUsuario: ['', [
+        Validators.required, 
+        Validators.pattern('^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$')
+      ]],
+      fechaNacimiento: ['', [
+        Validators.required,
         this.edadMayor,
-        Validators.pattern(/^(\d{2}-\d{2}-\d{4})$/)]],
+        Validators.pattern(/^(\d{2}-\d{2}-\d{4})$/)
+      ]],
       pregunta: ['', Validators.required],
       respuesta: ['', Validators.required],
-    }, { validator: this.passwordsMatchValidator });
+    }, { validator: this.passwordsMatchValidator });    
   }
 
   ngOnInit() {}
@@ -42,7 +54,6 @@ export class RegistroUsuarioPage implements OnInit {
   passwordsMatchValidator(form: FormGroup) {
     const password = form.get('password')?.value;
     const repPassword = form.get('repPassword')?.value;
-
     return password === repPassword ? null : { passwordsMismatch: true };
   }
 
@@ -55,6 +66,16 @@ export class RegistroUsuarioPage implements OnInit {
     const fechaNacimiento = this.registroForm.value.fechaNacimiento;
     const pregunta = this.registroForm.value.pregunta;
     const respuesta = this.registroForm.value.respuesta;
+
+    // Imprimir cada campo para verificar qué datos están entrando
+    console.log('Datos ingresados:');
+    console.log('Email:', email);
+    console.log('Password:', password);
+    console.log('Nombre de usuario:', nombreUsuario);
+    console.log('Apellido de usuario:', apellidoUsuario);
+    console.log('Fecha de nacimiento:', fechaNacimiento);
+    console.log('Pregunta de seguridad:', pregunta);
+    console.log('Respuesta de seguridad:', respuesta);
 
     // Si el formulario es válido, imprimir los valores
     if (this.registroForm.valid) {
@@ -77,6 +98,7 @@ export class RegistroUsuarioPage implements OnInit {
       console.log('Formulario inválido');
     }
   }
+  
   // Validación Fecha de Nacimiento
   edadMayor(control: any) {
     const fechaNacimiento = control.value;
@@ -167,14 +189,14 @@ export class RegistroUsuarioPage implements OnInit {
       return 'Este campo es requerido.';
     }
     if (contrasenaControl.hasError('minLength')) {
-      return 'La contraseña debe tener al menos 6 caracteres.';
+      return 'La contraseña debe tener al menos 8 caracteres.';
     }
 
     if (contrasenaControl.hasError('maxLength')) {
       return 'La contraseña debe tener como máximo 25 caracteres.';
     }
     if (contrasenaControl.hasError('pattern')) {
-      return 'La contraseña debe contener al menos una letra minúscula, una letra mayúscula y un carácter especial.';
+      return 'La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un numero y un carácter especial.';
     }
 
     return '';
@@ -182,14 +204,11 @@ export class RegistroUsuarioPage implements OnInit {
 
   // Validación Repetir Contraseña
   getRepetirContrasenaMessage() {
-    const contrasenaControl = this.registroForm.controls['password'];
-    const repetirContrasenaControl = this.registroForm.controls['repPassword'];
-
-    if (repetirContrasenaControl.hasError('required')) {
-      return 'Este campo es requerido.';
+    const repPasswordControl = this.registroForm.get('repPassword');
+    if (repPasswordControl?.hasError('required')) {
+      return 'Debes confirmar la contraseña.';
     }
-
-    if (repetirContrasenaControl.value !== contrasenaControl.value) {
+    if (this.registroForm.hasError('passwordsMismatch')) {
       return 'Las contraseñas no coinciden.';
     }
     return '';

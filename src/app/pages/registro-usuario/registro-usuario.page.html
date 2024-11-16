@@ -35,9 +35,15 @@
     >
       {{ getRepetirContrasenaMessage() }}
     </span>
+    <!-- Mensaje de error para contraseñas que no coinciden -->
+    <span
+      *ngIf="registroForm.hasError('passwordsMismatch') && registroForm.get('repPassword')?.touched"
+    >
+      Las contraseñas no coinciden.
+    </span>
 
     <ion-item>
-      <ion-label position="floating">Nombre de Usuario</ion-label>
+      <ion-label position="floating">Nombre</ion-label>
       <ion-input type="text" formControlName="nombreUsuario"></ion-input>
     </ion-item>
     <span

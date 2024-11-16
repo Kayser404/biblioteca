@@ -9,13 +9,13 @@
 
 <ion-content class="ion-padding">
   <form [formGroup]="publicacionForm" (ngSubmit)="enviar()">
-
     <ion-item>
       <ion-label position="floating">Título</ion-label>
       <ion-input type="text" formControlName="titulo"></ion-input>
     </ion-item>
     <div
-      *ngIf="publicacionForm.get('titulo')?.invalid && (publicacionForm.get('titulo')?.touched || publicacionForm.get('titulo')?.dirty)">
+      *ngIf="publicacionForm.get('titulo')?.invalid && (publicacionForm.get('titulo')?.touched || publicacionForm.get('titulo')?.dirty)"
+    >
       <ion-text color="danger">El título es obligatorio</ion-text>
     </div>
 
@@ -24,40 +24,63 @@
       <ion-textarea formControlName="sinopsis"></ion-textarea>
     </ion-item>
     <div
-      *ngIf="publicacionForm.get('sinopsis')?.invalid && (publicacionForm.get('sinopsis')?.touched || publicacionForm.get('sinopsis')?.dirty)">
+      *ngIf="publicacionForm.get('sinopsis')?.invalid && (publicacionForm.get('sinopsis')?.touched || publicacionForm.get('sinopsis')?.dirty)"
+    >
       <ion-text color="danger">La sinopsis es obligatoria</ion-text>
     </div>
 
     <ion-item>
-      <label for="file-input" class="disfras">Imagen de Portada
+      <label for="file-input" class="disfras"
+        >Imagen de Portada
         <ion-icon class="img" name="image-outline"></ion-icon>
         <h1>Seleccione una imagen</h1>
       </label>
-      <input (click)="takePicture()" id="file-input" formControlName="foto">
-      <ion-img class="image" [src]="publicacionForm.value.foto" *ngIf="publicacionForm.value.foto"></ion-img>
+      <input (click)="takePicture()" id="file-input" formControlName="foto" />
+      <ion-img
+        class="image"
+        [src]="publicacionForm.value.foto"
+        *ngIf="publicacionForm.value.foto"
+      ></ion-img>
     </ion-item>
-    
+    <div><ion-text color="danger">La imagen es obligatoria</ion-text></div>
+    <div *ngIf="publicacionForm.get('foto')?.invalid && (publicacionForm.get('foto')?.touched || publicacionForm.get('foto')?.dirty)">
+      <ion-text color="danger">La imagen es obligatoria</ion-text>
+    </div>
+
     <ion-item>
       <ion-label position="stacked">Archivo PDF</ion-label>
-      <input type="file" (change)="onFileSelected($event)" accept="application/pdf" />
+      <input
+        type="file"
+        (change)="onFileSelected($event)"
+        accept="application/pdf"
+      />
     </ion-item>
     <div *ngIf="selectedFile">
       <ion-text color="primary">Archivo seleccionado: {{ selectedFile.name }}</ion-text>
     </div>
-    
+    <div *ngIf="publicacionForm.get('pdf')?.invalid && (publicacionForm.get('pdf')?.touched || publicacionForm.get('pdf')?.dirty)">
+      <ion-text color="danger">El archivo pdf es obligatorio</ion-text>
+    </div>
+
     <ion-item>
       <ion-label position="floating">Categoría</ion-label>
       <ion-select formControlName="categoria">
-        <ion-select-option *ngFor="let categoria of categorias" [value]="categoria.id_categoria">
+        <ion-select-option
+          *ngFor="let categoria of categorias"
+          [value]="categoria.id_categoria"
+        >
           {{ categoria.nombreCategoria }}
         </ion-select-option>
       </ion-select>
     </ion-item>
     <div
-      *ngIf="publicacionForm.get('categoria')?.invalid && (publicacionForm.get('categoria')?.touched || publicacionForm.get('categoria')?.dirty)">
+      *ngIf="publicacionForm.get('categoria')?.invalid && (publicacionForm.get('categoria')?.touched || publicacionForm.get('categoria')?.dirty)"
+    >
       <ion-text color="danger">La categoría es obligatoria</ion-text>
     </div>
 
-    <ion-button expand="full" type="submit" [disabled]="publicacionForm.invalid">Guardar Publicación</ion-button>
+    <ion-button expand="full" type="submit" [disabled]="publicacionForm.invalid"
+      >Guardar Publicación</ion-button
+    >
   </form>
 </ion-content>

@@ -21,8 +21,8 @@ export class RegistrarLibroPage implements OnInit {
     this.publicacionForm = this.fb.group({
       titulo: ['', Validators.required],
       sinopsis: ['', Validators.required],
-      foto: [''],
-      pdf: [''],
+      foto: ['', Validators.required],
+      pdf: ['', Validators.required],
       categoria: ['', Validators.required],
     
     });
@@ -39,16 +39,18 @@ export class RegistrarLibroPage implements OnInit {
     });
   }
 
-  
-
-  onFileSelected(event: any) {
+  onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file && file.type === 'application/pdf') {
       this.selectedFile = file;
       console.log('Archivo PDF seleccionado:', this.selectedFile?.name);
+      this.publicacionForm.patchValue({ pdf: file });
+      this.publicacionForm.get('pdf')?.markAsTouched();  // Marca el campo como tocado
     } else {
       console.error('Por favor, selecciona un archivo PDF válido.');
       this.selectedFile = null;
+      this.publicacionForm.patchValue({ pdf: null });
+      this.publicacionForm.get('pdf')?.markAsTouched();  // Marca el campo como tocado
     }
   }
 
@@ -88,8 +90,15 @@ export class RegistrarLibroPage implements OnInit {
       resultType: CameraResultType.DataUrl,
       source: CameraSource.Prompt
     });
-    console.log('Imagen capturada:', image2.dataUrl);
-    this.publicacionForm.patchValue({ foto: image2.dataUrl });
+    
+    if (image2.dataUrl) {
+      console.log('Imagen capturada:', image2.dataUrl);
+      this.publicacionForm.patchValue({ foto: image2.dataUrl });
+      this.publicacionForm.get('foto')?.markAsTouched();  // Marca el campo como tocado
+    } else {
+      this.publicacionForm.patchValue({ foto: null });
+      this.publicacionForm.get('foto')?.markAsTouched();  // Marca el campo como tocado
+    }
   };
   
   async enviar() {

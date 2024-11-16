@@ -17,13 +17,85 @@
   <!-- Tarjeta de perfil del usuario -->
   <ion-card *ngIf="usuario">
     <ion-card-header>
-      <ion-card-title>{{ usuario.nombreUsuario }} {{ usuario.apellidoUsuario }}</ion-card-title>
-      <ion-card-subtitle>{{ usuario.email }}</ion-card-subtitle>
+      <ion-card-title>{{ usuarioForm.value.nombreUsuario }} {{ usuarioForm.value.apellidoUsuario }}</ion-card-title>
+      <ion-card-subtitle>{{ usuarioForm.value.email }}</ion-card-subtitle>
     </ion-card-header>
 
-    <ion-card-content>
-      <p><strong>Edad:</strong> {{ usuario.edadUsuario }}</p>
-      <!-- Agrega más detalles del usuario aquí si es necesario -->
+    <ion-card-content *ngIf="!editMode">
+      <p><strong>Fecha de nacimiento:</strong> {{ usuarioForm.value.fechaNacimiento }}</p>
+      <p><strong>Contraseña:</strong> **********</p> <!-- Contraseña censurada -->
+      <ion-button (click)="toggleEditMode()" color="primary">Editar</ion-button>
+    </ion-card-content>
+
+    <ion-card-content *ngIf="editMode">
+      <form [formGroup]="usuarioForm" (ngSubmit)="saveChanges()">
+        
+        <!-- Nombre -->
+        <ion-item>
+          <ion-label position="floating">Nombre</ion-label>
+          <ion-input formControlName="nombreUsuario" required></ion-input>
+        </ion-item>
+        <ion-text color="danger" *ngIf="usuarioForm.get('nombreUsuario')?.invalid && usuarioForm.get('nombreUsuario')?.touched">
+          {{ getNombresMessage() }}
+        </ion-text>
+
+        <!-- Apellido -->
+        <ion-item>
+          <ion-label position="floating">Apellido</ion-label>
+          <ion-input formControlName="apellidoUsuario" required></ion-input>
+        </ion-item>
+        <ion-text color="danger" *ngIf="usuarioForm.get('apellidoUsuario')?.invalid && usuarioForm.get('apellidoUsuario')?.touched">
+          {{ getApellidosMessage() }}
+        </ion-text>
+
+        <!-- Email -->
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input formControlName="email" type="email" required></ion-input>
+        </ion-item>
+        <ion-text color="danger" *ngIf="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched">
+          {{ getEmailMessage() }}
+        </ion-text>
+
+        <!-- Fecha de Nacimiento -->
+        <ion-item>
+          <ion-label position="floating">Fecha de Nacimiento</ion-label>
+          <ion-input placeholder="DD-MM-AAAA" type="text" formControlName="fechaNacimiento"></ion-input>
+        </ion-item>
+        <ion-text color="danger" *ngIf="usuarioForm.get('fechaNacimiento')?.invalid && usuarioForm.get('fechaNacimiento')?.touched">
+          {{ getFechaNacimientoMessage() }}
+        </ion-text>
+
+        <!-- Contraseña -->
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input formControlName="password" type="password" required></ion-input>
+        </ion-item>
+        <ion-text color="danger" *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched">
+          {{ getContrasenaMessage() }}
+        </ion-text>
+
+        <!-- Repetir Contraseña -->
+        <ion-item>
+          <ion-label position="floating">Repetir Contraseña</ion-label>
+          <ion-input formControlName="repPassword" type="password" required></ion-input>
+        </ion-item>
+        <ion-text color = "danger"
+          *ngIf="usuarioForm.get('repPassword')?.invalid && usuarioForm.get('repPassword')?.touched"
+        >
+          {{ getRepetirContrasenaMessage() }}
+        </ion-text>
+        <ion-text color = "danger"
+          *ngIf="usuarioForm.hasError('passwordsMismatch') && usuarioForm.get('repPassword')?.touched"
+        >
+          Las contraseñas no coinciden.
+        </ion-text>
+
+        <!-- Botones Guardar y Cancelar -->
+        <ion-button expand="full" type="submit">Guardar Cambios</ion-button>
+        <ion-button expand="full" color="medium" (click)="toggleEditMode()">Cancelar</ion-button>
+
+      </form>
     </ion-card-content>
   </ion-card>
 </ion-content>

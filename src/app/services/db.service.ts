@@ -39,7 +39,7 @@ export class DbService {
       password TEXT,
       nombreUsuario TEXT,
       apellidoUsuario TEXT,
-      edadUsuario INTEGER,
+      edadUsuario VARCHAR(10),
       id_rolFK INTEGER NULL,
       FOREIGN KEY (id_rolFK) REFERENCES Rol(id_rol)
     );
@@ -285,21 +285,45 @@ export class DbService {
         return null;
       });
   }
-  actualizarUsuario(usuario: any): Promise<any> {
+  actualizarUsuario(usuario: any, cambios: string[]): Promise<any> {
+    // Inicializa el arreglo de parámetros
+    const params: any[] = [];
+    
+    // Prepara las cláusulas SET y los parámetros
+    const setClauses = [];
+  
+    // Aquí mapeas cada campo manualmente
+    if (cambios.includes('nombreUsuario')) {
+      setClauses.push('nombreUsuario = ?');
+      params.push(usuario.nombreUsuario);
+    }
+    if (cambios.includes('apellidoUsuario')) {
+      setClauses.push('apellidoUsuario = ?');
+      params.push(usuario.apellidoUsuario);
+    }
+    if (cambios.includes('email')) {
+      setClauses.push('email = ?');
+      params.push(usuario.email);
+    }
+    if (cambios.includes('edadUsuario')) {
+      setClauses.push('edadUsuario = ?');
+      params.push(usuario.edadUsuario);
+    }
+    if (cambios.includes('password')) {
+      setClauses.push('password = ?');
+      params.push(usuario.password);
+    }
+  
+    // Aquí agregamos el ID del usuario para la condición WHERE
+    params.push(usuario.idUsuario);
+  
+    // Construir la consulta SQL
     const query = `
-      UPDATE Usuario 
-      SET nombreUsuario = ?, apellidoUsuario = ?, email = ?, edadUsuario = ?
+      UPDATE Usuario
+      SET ${setClauses.join(', ')}
       WHERE id_usuario = ?;
     `;
-
-    const params = [
-      usuario.nombreUsuario,
-      usuario.apellidoUsuario,
-      usuario.email,
-      usuario.edadUsuario,
-      usuario.idUsuario,
-    ];
-
+  
     return this.database
       .executeSql(query, params)
       .then(() => {
@@ -310,7 +334,7 @@ export class DbService {
         console.error('Error al actualizar el usuario:', error);
         return false;
       });
-  }
+  }   
 
   /* PreguntaRespuesta */
   fetchPreguntaRespuesta(): Observable<PreguntaRespuesta[]> {
@@ -662,6 +686,46 @@ export class DbService {
         return [];
       });
   }
+
+  // Obtener comentarios para una publicación específica
+  obtenerComentarios(idPublicacion: number): Promise<any[]> {
+    return this.database.executeSql(
+      'SELECT c.*, u.nombreUsuario FROM Comentarios c JOIN Usuario u ON c.id_usuarioFK = u.id_usuario WHERE c.id_publicacionFK = ? ORDER BY c.fechaComentario DESC',
+      [idPublicacion]
+    ).then(data => {
+      let comentarios = [];
+      for (let i = 0; i < data.rows.length; i++) {
+        comentarios.push(data.rows.item(i));
+      }
+      return comentarios;
+    });
+  }
+
+  // Agregar un nuevo comentario
+  agregarComentario(idPublicacion: number, idUsuario: number, texto: string): Promise<void> {
+    const fechaComentario = new Date().toISOString();
+    return this.database.executeSql(
+      'INSERT INTO Comentarios (fechaComentario, texto, id_usuarioFK, id_publicacionFK) VALUES (?, ?, ?, ?)',
+      [fechaComentario, texto, idUsuario, idPublicacion]
+    );
+  }
+
+  // Actualizar un comentario (para administrador)
+  actualizarComentario(idComentario: number, nuevoTexto: string): Promise<void> {
+    return this.database.executeSql(
+      'UPDATE Comentarios SET texto = ? WHERE id_comentario = ?',
+      [nuevoTexto, idComentario]
+    );
+  }
+
+
+
+
+
+
+
+
+
 
   /*-------------------- CONFIG.BASE DE DATOS ---------------------*/
   crearBD() {
