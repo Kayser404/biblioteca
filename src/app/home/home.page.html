@@ -4,18 +4,25 @@
   <div class="catalog-container">
     <ion-grid>
       <ion-row>
-        <!-- Usar ng-container para aplicar el *ngIf -->
         <ng-container *ngFor="let libro of libros">
           <ion-col *ngIf="libro.estado === 'aprobado'" size="12" size-md="6" size-lg="4">
             <ion-card>
+              <!-- Imagen del libro -->
               <img [src]="libro.foto" alt="Portada de {{ libro.titulo }}" class="book-cover"/>
+
+              <!-- Información del libro -->
               <ion-card-header>
                 <ion-card-title>{{ libro.titulo }}</ion-card-title>
-                <ion-card-subtitle>{{ libro.categoriaFK }}</ion-card-subtitle>
+                <ion-card-subtitle>Autor: {{ libro.nombreAutor }} {{ libro.apellidoAutor }}</ion-card-subtitle>
+                <ion-card-subtitle>Categoría: {{ libro.categoriaFK }}</ion-card-subtitle>
               </ion-card-header>
+
+              <!-- Sinopsis -->
               <ion-card-content>
-                <p>{{ libro.sinopsis | slice:0:100 }}...</p>
+                <p>{{ libro.sinopsis | slice: 0: 100 }}...</p>
               </ion-card-content>
+
+              <!-- Botón para ver más -->
               <ion-button expand="block" color="primary" (click)="verDetalles(libro)">
                 Ver más
               </ion-button>

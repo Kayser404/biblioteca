@@ -72,6 +72,12 @@ export class DetalleLibroPage implements OnInit {
     this.router.navigate(['/editar-libro'], { state: { libro: this.libro } });
   }
 
+  // Eliminar una publicación
+  async eliminarPublicacion(publicacion: Publicacion) {
+    await this.db.eliminarPublicacionPorId(Number(publicacion.idPublicacion));
+    this.db.buscarPublicacion(); // Refrescar la lista
+  }
+
    // Método para alternar entre agregar y eliminar de favoritos
    toggleFavorito() {
     if (this.esFavorito) {
@@ -136,9 +142,5 @@ export class DetalleLibroPage implements OnInit {
     );
     this.db.buscarPublicacion(); // Refrescar la lista
   }
-  // Eliminar una publicación
-  async eliminarPublicacion(publicacion: Publicacion) {
-    await this.db.eliminarPublicacionPorId(Number(publicacion.idPublicacion));
-    this.db.buscarPublicacion(); // Refrescar la lista
-  }
+  
 }

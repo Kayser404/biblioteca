@@ -10,6 +10,7 @@ export class Publicacion {
     observacion ="";
     usuarioFK = "";
     categoriaFK = "";
-
+    nombreAutor = "";
+    apellidoAutor = "";
 }
 

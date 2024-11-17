@@ -412,7 +412,7 @@ export class DbService {
   buscarPublicacion() {
     //retorno el resultado de la consulta
     return this.database
-      .executeSql('SELECT * FROM Publicacion', [])
+      .executeSql('SELECT * FROM Publicacion p INNER JOIN Usuario u ON p.id_usuarioFK = u.id_usuario', [])
       .then((res) => {
         //la consulta se realizó correctamente
         //creamos una variable para almacenar los registros del select
@@ -433,12 +433,16 @@ export class DbService {
               observacion: res.rows.item(i).observacion,
               usuarioFK: res.rows.item(i).id_usuarioFK,
               categoriaFK: res.rows.item(i).id_categoriaFK,
+              // Campos de Usuario
+              nombreAutor: res.rows.item(i).nombreUsuario,
+              apellidoAutor: res.rows.item(i).apellidoUsuario,
             });
           }
         }
         this.listaPublicacion.next(items as any);
       });
   }
+  
   agregarPublicacion(
     titulo: any,
     sinopsis: any,
