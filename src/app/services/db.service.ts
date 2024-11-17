@@ -74,6 +74,7 @@ export class DbService {
       id_comentario INTEGER PRIMARY KEY AUTOINCREMENT,
       fechaComentario DATE,
       texto TEXT,
+      rating INTEGER CHECK(rating BETWEEN 1 AND 5),  -- Columna de puntuación (1 a 5)
       id_usuarioFK INTEGER,
       id_publicacionFK INTEGER,
       FOREIGN KEY (id_usuarioFK) REFERENCES Usuario(id_usuario),
@@ -663,6 +664,7 @@ export class DbService {
         return false;
       });
   }
+
   obtenerFavoritoUsuario(idUsuario: any): Promise<Favorito[]> {
     return this.database
       .executeSql('SELECT * FROM Favorito WHERE id_usuarioFK = ?', [idUsuario])
@@ -690,47 +692,52 @@ export class DbService {
         return [];
       });
   }
-
-  // Obtener comentarios para una publicación específica
+  
+   /* Comentarios de publicacion */
+   agregarComentario(
+    idPublicacion: number,
+    idUsuario: any,
+    texto: string,
+    rating: number
+  ): Promise<void> {
+    const fechaComentario = new Date().toISOString(); // Fecha actual
+    return this.database.executeSql(
+      'INSERT INTO Comentarios (fechaComentario, texto, rating, id_usuarioFK, id_publicacionFK) VALUES (?, ?, ?, ?, ?)',
+      [fechaComentario, texto, rating, idUsuario, idPublicacion]
+    );
+  }
+  
   obtenerComentarios(idPublicacion: number): Promise<any[]> {
-    return this.database.executeSql(
-      'SELECT c.*, u.nombreUsuario FROM Comentarios c JOIN Usuario u ON c.id_usuarioFK = u.id_usuario WHERE c.id_publicacionFK = ? ORDER BY c.fechaComentario DESC',
-      [idPublicacion]
-    ).then(data => {
-      let comentarios = [];
-      for (let i = 0; i < data.rows.length; i++) {
-        comentarios.push(data.rows.item(i));
-      }
-      return comentarios;
-    });
+    return this.database
+      .executeSql(
+        `SELECT 
+           c.id_comentario, 
+           c.fechaComentario, 
+           c.texto, 
+           c.rating,
+           u.nombreUsuario 
+         FROM Comentarios c 
+         JOIN Usuario u 
+         ON c.id_usuarioFK = u.id_usuario 
+         WHERE c.id_publicacionFK = ? 
+         ORDER BY c.fechaComentario DESC`,
+        [idPublicacion]
+      )
+      .then((data) => {
+        let comentarios = [];
+        for (let i = 0; i < data.rows.length; i++) {
+          comentarios.push({
+            idComentario: data.rows.item(i).id_comentario,
+            fechaComentario: data.rows.item(i).fechaComentario,
+            texto: data.rows.item(i).texto,
+            rating: data.rows.item(i).rating, // Incluye la puntuación
+            nombreUsuario: data.rows.item(i).nombreUsuario,
+          });
+        }
+        return comentarios;
+      });
   }
-
-  // Agregar un nuevo comentario
-  agregarComentario(idPublicacion: number, idUsuario: number, texto: string): Promise<void> {
-    const fechaComentario = new Date().toISOString();
-    return this.database.executeSql(
-      'INSERT INTO Comentarios (fechaComentario, texto, id_usuarioFK, id_publicacionFK) VALUES (?, ?, ?, ?)',
-      [fechaComentario, texto, idUsuario, idPublicacion]
-    );
-  }
-
-  // Actualizar un comentario (para administrador)
-  actualizarComentario(idComentario: number, nuevoTexto: string): Promise<void> {
-    return this.database.executeSql(
-      'UPDATE Comentarios SET texto = ? WHERE id_comentario = ?',
-      [nuevoTexto, idComentario]
-    );
-  }
-
-
-
-
-
-
-
-
-
-
+  
   /*-------------------- CONFIG.BASE DE DATOS ---------------------*/
   crearBD() {
     //verifico si la plataforma está lista

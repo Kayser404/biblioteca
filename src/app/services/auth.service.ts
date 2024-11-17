@@ -37,4 +37,5 @@ export class AuthService {
     localStorage.removeItem('idUsuario');
     localStorage.removeItem('rolId');  // Asegurarse de eliminar el rol
   }
+  
 }

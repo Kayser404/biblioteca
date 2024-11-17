@@ -17,6 +17,9 @@ export class DetalleLibroPage implements OnInit {
   isAdmin: boolean = false;
   esFavorito: boolean = false;
   observacionForm: FormGroup;
+  comentarios: any[] = []; 
+  comentarioForm: FormGroup; 
+
 
   constructor(
     private router: Router,
@@ -26,6 +29,10 @@ export class DetalleLibroPage implements OnInit {
   ) {
     this.observacionForm = this.fb.group({
       observacion: ['', Validators.required],
+    });
+    this.comentarioForm = this.fb.group({
+      texto: ['', Validators.required],
+      puntuacion: ['', Validators.required],
     });
   }
 
@@ -47,6 +54,34 @@ export class DetalleLibroPage implements OnInit {
       this.db.obtenerFavoritoUsuario(this.idUsuario).then(favoritos => {
         this.esFavorito = favoritos.some(fav => fav.idPublicacionFK === this.libro.idPublicacion);
       });
+    }
+
+    this.db.obtenerComentarios(this.libro.idPublicacion).then((comentarios) => {
+      this.comentarios = comentarios;
+      console.log('Comentarios con puntuación:', this.comentarios);
+    });
+    
+  }
+
+  // Método para agregar el comentario
+  agregarComentario() {
+    if (this.comentarioForm.valid) {
+      const nuevoComentario = this.comentarioForm.value;
+      
+      this.db
+        .agregarComentario(
+          this.libro.idPublicacion,
+          this.idUsuario,
+          nuevoComentario.texto,
+          nuevoComentario.rating
+        )
+        .then(() => {
+          console.log('Comentario y puntuación agregados correctamente.');
+          this.comentarioForm.reset(); // Reiniciar el formulario después de enviar
+        })
+        .catch((error) => {
+          console.error('Error al agregar el comentario:', error);
+        });
     }
   }
 
