@@ -31,7 +31,7 @@ export class DetalleLibroPage implements OnInit {
     });
     this.comentarioForm = this.fb.group({
       texto: ['', Validators.required],
-      puntuacion: ['', Validators.required],
+      rating: ['', Validators.required],
     });
   }
 
@@ -77,6 +77,11 @@ export class DetalleLibroPage implements OnInit {
         .then(() => {
           console.log('Comentario y puntuación agregados correctamente.');
           this.comentarioForm.reset(); // Reiniciar el formulario después de enviar
+          // Obtener los comentarios actualizados
+          this.db.obtenerComentarios(this.libro.idPublicacion).then((comentarios) => {
+            this.comentarios = comentarios;
+            console.log('Comentarios actualizados:', this.comentarios);
+          });
         })
         .catch((error) => {
           console.error('Error al agregar el comentario:', error);

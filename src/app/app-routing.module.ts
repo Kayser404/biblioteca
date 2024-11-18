@@ -55,6 +55,14 @@ const routes: Routes = [
     path: 'admin-publicaciones',
     loadChildren: () => import('./pages/admin-publicaciones/admin-publicaciones.module').then( m => m.AdminPublicacionesPageModule)
   },
+  {
+    path: 'recuperar',
+    loadChildren: () => import('./pages/recuperar/recuperar.module').then( m => m.RecuperarPageModule)
+  },
+  {
+    path: 'nueva-contrasena/:idUsuario',
+    loadChildren: () => import('./pages/nueva-contrasena/nueva-contrasena.module').then( m => m.NuevaContrasenaPageModule)
+  },
 
 
 

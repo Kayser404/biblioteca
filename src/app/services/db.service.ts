@@ -289,10 +289,10 @@ export class DbService {
   actualizarUsuario(usuario: any, cambios: string[]): Promise<any> {
     // Inicializa el arreglo de parámetros
     const params: any[] = [];
-    
+
     // Prepara las cláusulas SET y los parámetros
     const setClauses = [];
-  
+
     // Aquí mapeas cada campo manualmente
     if (cambios.includes('nombreUsuario')) {
       setClauses.push('nombreUsuario = ?');
@@ -314,17 +314,17 @@ export class DbService {
       setClauses.push('password = ?');
       params.push(usuario.password);
     }
-  
+
     // Aquí agregamos el ID del usuario para la condición WHERE
     params.push(usuario.idUsuario);
-  
+
     // Construir la consulta SQL
     const query = `
       UPDATE Usuario
       SET ${setClauses.join(', ')}
       WHERE id_usuario = ?;
     `;
-  
+
     return this.database
       .executeSql(query, params)
       .then(() => {
@@ -335,7 +335,53 @@ export class DbService {
         console.error('Error al actualizar el usuario:', error);
         return false;
       });
-  }   
+  }
+
+  verificarEmail(email: any) {
+    return this.database
+      .executeSql('SELECT id_usuario FROM Usuario WHERE email = ?', [email])
+      .then((res) => {
+        if (res.rows.length > 0) {
+          const idUsuario = res.rows.item(0).id_usuario;
+          return idUsuario;
+        } else {
+          return null;
+        }
+      });
+  }
+  obtenerPreguntaRespuesta(idUsuario: any) {
+    return this.database
+      .executeSql(
+        'SELECT pregunta, respuesta FROM PREGUNTARESPUESTA WHERE id_usuarioFK = ?',
+        [idUsuario]
+      )
+      .then((res) => {
+        if (res.rows.length > 0) {
+          const preguntaRespuesta = {
+            pregunta: res.rows.item(0).pregunta,
+            respuesta: res.rows.item(0).respuesta,
+          };
+          console.log('Pregunta y respuesta:' + preguntaRespuesta);
+          return preguntaRespuesta;
+        } else {
+          return null;
+        }
+      });
+  }
+  modificarContrasena(idUsuario: any, password: any) {
+    return this.database
+      .executeSql('UPDATE USUARIO SET password = ? WHERE id_usuario = ?', [
+        password,
+        idUsuario,
+      ])
+      .then(() => {
+        return true;
+      })
+      .catch((error) => {
+        console.error('Error al actualizar la contraseña:', error);
+        return false;
+      });
+  }
 
   /* PreguntaRespuesta */
   fetchPreguntaRespuesta(): Observable<PreguntaRespuesta[]> {
@@ -413,7 +459,10 @@ export class DbService {
   buscarPublicacion() {
     //retorno el resultado de la consulta
     return this.database
-      .executeSql('SELECT * FROM Publicacion p INNER JOIN Usuario u ON p.id_usuarioFK = u.id_usuario', [])
+      .executeSql(
+        'SELECT * FROM Publicacion p INNER JOIN Usuario u ON p.id_usuarioFK = u.id_usuario',
+        []
+      )
       .then((res) => {
         //la consulta se realizó correctamente
         //creamos una variable para almacenar los registros del select
@@ -443,7 +492,7 @@ export class DbService {
         this.listaPublicacion.next(items as any);
       });
   }
-  
+
   agregarPublicacion(
     titulo: any,
     sinopsis: any,
@@ -477,9 +526,10 @@ export class DbService {
 
   obtenerPublicacionUsuario(idUsuario: any) {
     return this.database
-      .executeSql('SELECT * FROM Publicacion WHERE id_usuarioFK = ?', [
-        idUsuario,
-      ])
+      .executeSql(
+        'SELECT * FROM Publicacion p INNER JOIN Usuario u ON p.id_usuarioFK = u.id_usuario WHERE id_usuarioFK = ?',
+        [idUsuario]
+      )
       .then((res) => {
         if (res.rows.length > 0) {
           const publicaciones = [];
@@ -492,8 +542,12 @@ export class DbService {
               foto: res.rows.item(i).foto,
               pdf: res.rows.item(i).pdf,
               estado: res.rows.item(i).estado,
+              observacion: res.rows.item(i).observacion,
               usuarioFK: res.rows.item(i).id_usuarioFK,
               categoriaFK: res.rows.item(i).id_categoriaFK,
+              // Campos de Usuario
+              nombreAutor: res.rows.item(i).nombreUsuario,
+              apellidoAutor: res.rows.item(i).apellidoUsuario,
             });
           }
           return publicaciones; // Devuelve todas las publicaciones del usuario
@@ -546,6 +600,8 @@ export class DbService {
             fechaPublicacion: res.rows.item(0).fechaPublicacion,
             foto: res.rows.item(0).foto,
             pdf: res.rows.item(0).pdf,
+            estado: res.rows.item(0).estado,
+            observacion: res.rows.item(0).observacion,
             usuarioFK: res.rows.item(0).id_usuarioFK,
             categoriaFK: res.rows.item(0).id_categoriaFK,
           };
@@ -563,7 +619,7 @@ export class DbService {
   aprobarRechazarPublicacionPorId(
     idPublicacion: number,
     estado: string,
-    observacion: string,
+    observacion: string
   ): Promise<boolean> {
     return this.database
       .executeSql(
@@ -692,9 +748,40 @@ export class DbService {
         return [];
       });
   }
-  
-   /* Comentarios de publicacion */
-   agregarComentario(
+
+  /* Comentarios de publicacion */
+  fetchComentario(): Observable<Comentarios[]> {
+    return this.listaComentario.asObservable();
+  }
+
+  buscarComentario() {
+    //retorno el resultado de la consulta
+    return this.database
+      .executeSql('SELECT * FROM Comentarios', [])
+      .then((res) => {
+        //la consulta se realizó correctamente
+        //creamos una variable para almacenar los registros del select
+        let items: Comentarios[] = [];
+        //validar cuantos registros vienen en el select
+        if (res.rows.length > 0) {
+          //recorro la consulta dentro del res
+          for (var i = 0; i < res.rows.length; i++) {
+            //alamaceno los registros en items
+            items.push({
+              idComentario: res.rows.item(i).id_comentario,
+              fechaComentario: res.rows.item(i).fechaComentario,
+              texto: res.rows.item(i).texto,
+              rating: res.rows.item(i).rating,
+              idUsuarioFK: res.rows.item(i).id_usuarioFK,
+              idPublicacionFK: res.rows.item(i).id_publicacionFK,
+            });
+          }
+        }
+        this.listaComentario.next(items as any);
+      });
+  }
+
+  agregarComentario(
     idPublicacion: number,
     idUsuario: any,
     texto: string,
@@ -706,7 +793,7 @@ export class DbService {
       [fechaComentario, texto, rating, idUsuario, idPublicacion]
     );
   }
-  
+
   obtenerComentarios(idPublicacion: number): Promise<any[]> {
     return this.database
       .executeSql(
@@ -730,14 +817,14 @@ export class DbService {
             idComentario: data.rows.item(i).id_comentario,
             fechaComentario: data.rows.item(i).fechaComentario,
             texto: data.rows.item(i).texto,
-            rating: data.rows.item(i).rating, // Incluye la puntuación
+            rating: data.rows.item(i).rating,
             nombreUsuario: data.rows.item(i).nombreUsuario,
           });
         }
         return comentarios;
       });
   }
-  
+
   /*-------------------- CONFIG.BASE DE DATOS ---------------------*/
   crearBD() {
     //verifico si la plataforma está lista
@@ -792,6 +879,7 @@ export class DbService {
       this.buscarCategoria();
       this.buscarPublicacion();
       this.buscarFavorito();
+      this.buscarComentario();
     } catch (e) {
       console.log('Error en crear Tabla:', e); // Mostrar error en consola para más detalles
       this.presentAlert('Error en crear Tabla: ' + JSON.stringify(e)); // Mostrar error detallado en un alert

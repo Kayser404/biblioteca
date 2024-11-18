@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>nueva-contrasena</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Nueva contraseña</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-grid>
+    <form [formGroup]="passwordForm" (ngSubmit)="enviar()">
+      <ion-row class="main-row">
+        <ion-col size="12" class="box">
+          <ion-input formControlName="contrasenia" class="campo" label-placement="floating"
+            label="Ingrese su contraseña" type="password"></ion-input>
+        </ion-col>
+        <!-- mensaje de validador -->
+        <span *ngIf="passwordForm.controls.contrasenia.invalid && passwordForm.controls.contrasenia.touched">
+          {{ getContraseniaMessage() }}
+        </span>
+        <ion-col size="12" class="box">
+          <ion-input formControlName="repetirContrasenia" class="campo" label-placement="floating"
+            label="Repita su contraseña" type="password"></ion-input>
+        </ion-col>
+        <!-- mensaje de validador -->
+        <span
+        *ngIf="passwordForm.controls.repetirContrasenia.invalid && passwordForm.controls.repetirContrasenia.touched">
+        {{ getRepetirContraseniaMessage() }}
+        </span>
+        <ion-button [disabled]="!passwordForm.valid" (click)="enviar()" fill="outline" shape="round" color="danger">Enviar</ion-button>
+      </ion-row>
+    </form>
+  </ion-grid>
+</ion-content>

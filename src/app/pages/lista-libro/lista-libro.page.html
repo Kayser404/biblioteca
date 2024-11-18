@@ -22,8 +22,13 @@
       
       <ion-label>
         <h2>{{ libro.titulo }}</h2>
-        <ion-text color="medium">Publicado el: {{ libro.fechaPublicacion }}</ion-text>
-      </ion-label>
+        <ion-item lines="none">
+          <ion-text color="medium">Publicado el: {{ libro.fechaPublicacion }}</ion-text>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-text color="medium">Estado: {{ libro.estado }}</ion-text>
+        </ion-item>
+      </ion-label>      
       
       <ion-button fill="clear" slot="end" (click)="verDetalleLibro(libro)">
         <ion-icon name="eye" slot="icon-only"></ion-icon>

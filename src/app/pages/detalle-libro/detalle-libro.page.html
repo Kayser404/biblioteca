@@ -1,19 +1,13 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/lista-libro"></ion-back-button>
+      <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Detalle del Libro</ion-title>
+    <ion-title>{{ libro.titulo }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Detalle del Libro</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
   <!-- Imagen del libro -->
   <ion-card>
     <ion-img [src]="libro.foto || 'assets/img/default-book.png'" alt="{{ libro.titulo }}"></ion-img>
@@ -21,15 +15,15 @@
 
   <!-- Detalles del libro -->
   <ion-card>
-    <ion-card-header>
-      <ion-card-title>{{ libro.titulo }}</ion-card-title>
-    </ion-card-header>
-
     <div>
       <ion-card-subtitle>Autor: {{ libro.nombreAutor }} {{ libro.apellidoAutor }}</ion-card-subtitle>
       <p><strong>Sinopsis:</strong> {{ libro.sinopsis }}</p>
       <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion }}</p>
       <p><strong>Categoría:</strong> {{ libro.categoriaFK }}</p>
+      @if (idUsuario === libro.usuarioFK.toString()) {
+        <p><strong>Observación:</strong> {{ libro.observacion }}</p>
+        <p><strong>Estado:</strong> {{ libro.estado }}</p>
+      }
     </div>
 
     <!-- Botón para ver PDF -->
@@ -40,85 +34,86 @@
 
     <!-- Opciones según el usuario -->
     @if (idUsuario === libro.usuarioFK.toString()) {
-      <!-- Botones para editar y eliminar el libro -->
-      <ion-button expand="block" color="primary" (click)="editarLibro()">
-        <ion-icon slot="start" name="create-outline"></ion-icon>
-        Editar Libro
-      </ion-button>
+    <!-- Botones para editar y eliminar el libro -->
+    <ion-button expand="block" color="primary" (click)="editarLibro()">
+      <ion-icon slot="start" name="create-outline"></ion-icon>
+      Editar Libro
+    </ion-button>
 
-      <ion-button expand="block" color="danger" (click)="eliminarPublicacion(libro)">
-        Eliminar
-      </ion-button>
+    <ion-button expand="block" color="danger" (click)="eliminarPublicacion(libro)">
+      Eliminar
+    </ion-button>
     } @else {
-      <!-- Botón para agregar o quitar de favoritos -->
-      <ion-button expand="block" color="secondary" (click)="toggleFavorito()">
-        <ion-icon slot="start" [name]="esFavorito ? 'heart' : 'heart-outline'"></ion-icon>
-        {{ esFavorito ? 'Quitar de Favoritos' : 'Agregar a Favoritos' }}
-      </ion-button>
-      
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>Comentarios y Calificaciones</ion-card-title>
-        </ion-card-header>
-      
-        <ion-card-content>
-          <!-- Mostrar los comentarios existentes -->
-          <div *ngFor="let comentario of comentarios">
-            <ion-item>
-              <ion-label>
-                <h2>{{ comentario.nombreUsuario }}</h2>
-                <p>{{ comentario.texto }}</p>
-                <ion-text color="medium">Puntuación: {{ comentario.rating }}</ion-text>
-              </ion-label>
-            </ion-item>
-          </div>
-      
-          <!-- Formulario para agregar un nuevo comentario -->
-          <form [formGroup]="comentarioForm" (ngSubmit)="agregarComentario()">
-            <ion-item>
-              <ion-label position="floating">Escribe tu comentario</ion-label>
-              <ion-textarea formControlName="texto" required></ion-textarea>
-            </ion-item>
-      
-            <ion-item>
-              <ion-label>Puntuación</ion-label>
-              <ion-select formControlName="puntuacion" placeholder="Selecciona">
-                <ion-select-option *ngFor="let p of [1, 2, 3, 4, 5]" [value]="p">
-                  {{ p }}
-                </ion-select-option>
-              </ion-select>
-            </ion-item>
-      
-            <ion-button expand="block" type="submit" [disabled]="!comentarioForm.valid">
-              Enviar Comentario
-            </ion-button>
-          </form>
-        </ion-card-content>
-      </ion-card>
-      
-
-      <!-- Formulario para dejar observación, solo para administradores -->
-      @if (isAdmin) {
-        <form [formGroup]="observacionForm">
-          <ion-item>
-            <ion-label position="floating">Observación</ion-label>
-            <ion-textarea formControlName="observacion" required>
-              Observación o comentario para esta publicación.
-            </ion-textarea>
-          </ion-item>
-
-          <!-- Botones para aprobar y rechazar publicación -->
-          <ion-button expand="block" color="secondary" type="submit"
-            [disabled]="!observacionForm.valid" (click)="aprobarPublicacion(libro)">
-            Aprobar
-          </ion-button>
-
-          <ion-button expand="block" color="danger" type="submit"
-            [disabled]="!observacionForm.valid" (click)="rechazarPublicacion(libro)">
-            Rechazar
-          </ion-button>
-        </form>
-      }
+    <!-- Botón para agregar o quitar de favoritos -->
+    <ion-button expand="block" color="secondary" (click)="toggleFavorito()">
+      <ion-icon slot="start" [name]="esFavorito ? 'heart' : 'heart-outline'"></ion-icon>
+      {{ esFavorito ? 'Quitar de Favoritos' : 'Agregar a Favoritos' }}
+    </ion-button>
     }
   </ion-card>
+
+  <!-- Comentarios fuera de la carta de detalles del libro -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Comentarios y Calificaciones</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Formulario para agregar un nuevo comentario -->
+      <form [formGroup]="comentarioForm" (ngSubmit)="agregarComentario()">
+        <ion-item>
+          <ion-label position="floating">Escribe tu comentario</ion-label>
+          <ion-textarea formControlName="texto" required></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Puntuación</ion-label>
+          <ion-select formControlName="rating" placeholder="Selecciona">
+            <ion-select-option *ngFor="let p of [1, 2, 3, 4, 5]" [value]="p">
+              {{ p }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-button expand="block" type="submit" [disabled]="!comentarioForm.valid">
+          Enviar Comentario
+        </ion-button>
+      </form>
+
+      <!-- Mostrar los comentarios existentes -->
+      <div *ngFor="let comentario of comentarios">
+        <ion-item>
+          <ion-label>
+            <h2>{{ comentario.nombreUsuario }}</h2>
+            <p>{{ comentario.texto }}</p>
+            <ion-text color="medium">Puntuación: {{ comentario.rating }}</ion-text>
+          </ion-label>
+        </ion-item>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Formulario para dejar observación, solo para administradores -->
+  @if (isAdmin && idUsuario !== libro.usuarioFK.toString()) {
+  <ion-card>
+    <form [formGroup]="observacionForm">
+      <ion-item>
+        <ion-label position="floating">Observación</ion-label>
+        <ion-textarea formControlName="observacion" required>
+          Observación o comentario para esta publicación.
+        </ion-textarea>
+      </ion-item>
+
+      <!-- Botones para aprobar y rechazar publicación -->
+      <ion-button expand="block" color="secondary" type="submit" [disabled]="!observacionForm.valid"
+        (click)="aprobarPublicacion(libro)">
+        Aprobar
+      </ion-button>
+
+      <ion-button expand="block" color="danger" type="submit" [disabled]="!observacionForm.valid"
+        (click)="rechazarPublicacion(libro)">
+        Rechazar
+      </ion-button>
+    </form>
+  </ion-card>
+  }
 </ion-content>

@@ -79,4 +79,8 @@ export class LoginPage implements OnInit {
   goToRegister() {
     this.router.navigate(['/registro-usuario']);
   }
+  // Redirección al registro
+  goToRecover() {
+    this.router.navigate(['/recuperar']);
+  }
 }
