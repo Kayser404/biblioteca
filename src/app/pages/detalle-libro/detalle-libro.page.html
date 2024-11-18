@@ -51,6 +51,31 @@
     </ion-button>
     }
   </ion-card>
+  
+  <!-- Formulario para dejar observación, solo para administradores -->
+  @if (isAdmin && idUsuario !== libro.usuarioFK.toString()) {
+    <ion-card>
+      <form [formGroup]="observacionForm">
+        <ion-item>
+          <ion-label position="floating">Observación</ion-label>
+          <ion-textarea formControlName="observacion" required>
+            Observación o comentario para esta publicación.
+          </ion-textarea>
+        </ion-item>
+  
+        <!-- Botones para aprobar y rechazar publicación -->
+        <ion-button expand="block" color="secondary" type="submit" [disabled]="!observacionForm.valid"
+          (click)="aprobarPublicacion(libro)">
+          Aprobar
+        </ion-button>
+  
+        <ion-button expand="block" color="danger" type="submit" [disabled]="!observacionForm.valid"
+          (click)="rechazarPublicacion(libro)">
+          Rechazar
+        </ion-button>
+      </form>
+    </ion-card>
+    }
 
   <!-- Comentarios fuera de la carta de detalles del libro -->
   <ion-card>
@@ -92,28 +117,4 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Formulario para dejar observación, solo para administradores -->
-  @if (isAdmin && idUsuario !== libro.usuarioFK.toString()) {
-  <ion-card>
-    <form [formGroup]="observacionForm">
-      <ion-item>
-        <ion-label position="floating">Observación</ion-label>
-        <ion-textarea formControlName="observacion" required>
-          Observación o comentario para esta publicación.
-        </ion-textarea>
-      </ion-item>
-
-      <!-- Botones para aprobar y rechazar publicación -->
-      <ion-button expand="block" color="secondary" type="submit" [disabled]="!observacionForm.valid"
-        (click)="aprobarPublicacion(libro)">
-        Aprobar
-      </ion-button>
-
-      <ion-button expand="block" color="danger" type="submit" [disabled]="!observacionForm.valid"
-        (click)="rechazarPublicacion(libro)">
-        Rechazar
-      </ion-button>
-    </form>
-  </ion-card>
-  }
 </ion-content>
