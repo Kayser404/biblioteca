@@ -20,7 +20,6 @@ export class DetalleLibroPage implements OnInit {
   comentarios: any[] = []; 
   comentarioForm: FormGroup; 
 
-
   constructor(
     private router: Router,
     private fb: FormBuilder,
