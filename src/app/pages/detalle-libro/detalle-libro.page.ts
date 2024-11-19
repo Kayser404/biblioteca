@@ -1,24 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { DbService } from 'src/app/services/db.service';
 import { FileOpener } from '@capacitor-community/file-opener';
 import { Publicacion } from 'src/app/services/publicacion';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-detalle-libro',
   templateUrl: './detalle-libro.page.html',
   styleUrls: ['./detalle-libro.page.scss'],
 })
-export class DetalleLibroPage implements OnInit {
-  libro: any;
+export class DetalleLibroPage implements OnInit, OnDestroy {
+  libro: any = {
+    nombreAutor: '',
+    apellidoAutor: '',
+    sinopsis: '',
+    fechaPublicacion: '',
+    categoriaFK: '',
+    usuarioFK: null,
+    observacion: '',
+    estado: '',
+  };
+
   idUsuario: string | null = null;
   isAdmin: boolean = false;
   esFavorito: boolean = false;
   observacionForm: FormGroup;
   comentarios: any[] = []; 
   comentarioForm: FormGroup; 
+  navigationSubscription: Subscription = new Subscription();
 
   constructor(
     private router: Router,
@@ -36,31 +49,49 @@ export class DetalleLibroPage implements OnInit {
   }
 
   ngOnInit() {
-    // Obtener el ID del usuario y rol desde localStorage
-    this.idUsuario = this.auth.getIdUsuario();
-    this.isAdmin = this.auth.isAdmin();
+  // Inicializar usuario y rol
+  this.idUsuario = this.auth.getIdUsuario();
+  this.isAdmin = this.auth.isAdmin();
 
-    // Verificar que la navegación actual tenga el estado y que el objeto 'libro' exista
-    const navigation = this.router.getCurrentNavigation();
-    if (navigation?.extras?.state && navigation.extras.state['libro']) {
-      this.libro = navigation.extras.state['libro'];
-    } else {
-      console.error('No se encontró el libro en el estado de navegación.');
+  // Escuchar cambios en la navegación
+  this.navigationSubscription = this.router.events.subscribe((event) => {
+    if (event instanceof NavigationEnd && this.router.url.includes('/detalle-libro')) {
+      console.log('NavigationEnd ejecutado, recargando datos.');
+      this.cargarDatos();
     }
-    
-    // Verificar si el libro ya está en favoritos
+  });
+}
+
+ngOnDestroy() {
+  // Limpiar la suscripción para evitar fugas de memoria
+  if (this.navigationSubscription) {
+    this.navigationSubscription.unsubscribe();
+  }
+}
+
+cargarDatos() {
+  const navigation = this.router.getCurrentNavigation();
+  if (navigation?.extras?.state && navigation.extras.state['libro']) {
+    this.libro = navigation.extras.state['libro'];
+
+    // Verificar favoritos
     if (this.idUsuario && this.libro?.idPublicacion) {
-      this.db.obtenerFavoritoUsuario(this.idUsuario).then(favoritos => {
-        this.esFavorito = favoritos.some(fav => fav.idPublicacionFK === this.libro.idPublicacion);
+      this.db.obtenerFavoritoUsuario(this.idUsuario).then((favoritos) => {
+        this.esFavorito = favoritos.some(
+          (fav) => fav.idPublicacionFK === this.libro.idPublicacion
+        );
+      });
+
+      // Obtener comentarios
+      this.db.obtenerComentarios(this.libro.idPublicacion).then((comentarios) => {
+        this.comentarios = comentarios;
       });
     }
-
-    this.db.obtenerComentarios(this.libro.idPublicacion).then((comentarios) => {
-      this.comentarios = comentarios;
-      console.log('Comentarios con puntuación:', this.comentarios);
-    });
-    
+  } else {
+    console.error('No se recibió ningún libro en la navegación.');
+    this.libro = null; // Manejar el caso en que no se reciben datos
   }
+}
 
   // Método para agregar el comentario
   agregarComentario() {
@@ -107,8 +138,8 @@ export class DetalleLibroPage implements OnInit {
   }
 
   // Redireccionar a editar libro del usuario que coincide con su id de publicacion
-  editarLibro() {
-    this.router.navigate(['/editar-libro'], { state: { libro: this.libro } });
+  editarLibro(libro: any) {
+    this.router.navigate(['/editar-libro'], { state: { libro } });
   }
 
   // Eliminar una publicación

@@ -15,16 +15,17 @@
 
   <!-- Detalles del libro -->
   <ion-card>
-    <div>
-      <ion-card-subtitle>Autor: {{ libro.nombreAutor }} {{ libro.apellidoAutor }}</ion-card-subtitle>
+    <div *ngIf="libro">
+      <p><strong>Autor: </strong> {{ libro.nombreAutor }} {{ libro.apellidoAutor }}<p>
       <p><strong>Sinopsis:</strong> {{ libro.sinopsis }}</p>
       <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion }}</p>
       <p><strong>Categoría:</strong> {{ libro.categoriaFK }}</p>
-      @if (idUsuario === libro.usuarioFK.toString()) {
+      @if (idUsuario === libro.usuarioFK) {
         <p><strong>Observación:</strong> {{ libro.observacion }}</p>
         <p><strong>Estado:</strong> {{ libro.estado }}</p>
       }
     </div>
+    <p *ngIf="!libro">Cargando datos...</p>
 
     <!-- Botón para ver PDF -->
     <ion-button expand="block" color="primary" (click)="verPDF()">
@@ -33,9 +34,9 @@
     </ion-button>
 
     <!-- Opciones según el usuario -->
-    @if (idUsuario === libro.usuarioFK.toString()) {
+    @if (idUsuario === libro.usuarioFK) {
     <!-- Botones para editar y eliminar el libro -->
-    <ion-button expand="block" color="primary" (click)="editarLibro()">
+    <ion-button expand="block" color="primary" (click)="editarLibro(libro)">
       <ion-icon slot="start" name="create-outline"></ion-icon>
       Editar Libro
     </ion-button>
@@ -53,7 +54,7 @@
   </ion-card>
   
   <!-- Formulario para dejar observación, solo para administradores -->
-  @if (isAdmin && idUsuario !== libro.usuarioFK.toString()) {
+  @if (isAdmin && idUsuario !== libro.usuarioFK) {
     <ion-card>
       <form [formGroup]="observacionForm">
         <ion-item>

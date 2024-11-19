@@ -27,7 +27,6 @@ export class ListaLibroPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.actualizarListadoPublicacion();
-    const idUsuario = this.auth.getIdUsuario();
     this.libroSubscription = this.db.fetchPublicaciones().subscribe(() => {
       this.actualizarListadoPublicacion();
     });
@@ -48,4 +47,5 @@ export class ListaLibroPage implements OnInit, OnDestroy {
   verDetalleLibro(libro: any) {
     this.router.navigate(['/detalle-libro'], { state: { libro } });
   }
+  
 }

@@ -17,18 +17,20 @@
   <!-- Lista de Publicaciones -->
   <ion-list>
     <ion-card *ngFor="let publicacion of publicaciones">
+      @if (idUsuario !== publicacion.usuarioFK.toString()) {
       <ion-card-header>
         <ion-card-title>{{ publicacion.titulo }}</ion-card-title>
         <ion-card-subtitle>{{ publicacion.sinopsis }}</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <!-- <p>Publicado por: {{ publicacion.usuario }}</p> -->
-        <p>Fecha: {{ publicacion.fechaPublicacion | date }}</p>
+        <p>Fecha: {{ publicacion.fechaPublicacion }}</p>
         <!-- <p>Categoría: {{ publicacion.categoria }}</p> -->
       </ion-card-content>
       <ion-item>
         <ion-button color="primary" (click)="verDetalleLibro(publicacion)">Ver</ion-button>
       </ion-item>
+    }
     </ion-card>
   </ion-list>
 </ion-content>

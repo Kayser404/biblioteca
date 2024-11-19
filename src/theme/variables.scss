@@ -1,91 +1,28 @@
-/*
- * Dark Colors - Estilo minimalista y elegante
- * -------------------------------------------
- */
+:root {
+  /* Tema claro (y colores globales para ambos temas) */
+  --ion-color-primary: #8B4513; /* Marrón madera */
+  --ion-color-secondary: #D2B48C; /* Beige claro */
+  --ion-color-tertiary: #A0522D; /* Marrón rojizo */
+  --ion-color-light: #FFF8E7; /* Blanco cálido */
+  --ion-color-dark: #5C4033; /* Marrón oscuro */
 
- body.dark {
-  --ion-color-primary: #4A90E2; /* Azul grisáceo */
-  --ion-color-primary-rgb: 74, 144, 226;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #407cc1;
-  --ion-color-primary-tint: #5a9ef0;
+  /* Colores globales para botones */
+  --button-background-color: #ffffff;
+  --button-text-color: #333333;
+  --button-border-radius: 6px;
+  --button-hover-color: #f2f2f2;
 
-  --ion-color-secondary: #7FB3D5; /* Azul claro */
-  --ion-color-secondary-rgb: 127, 179, 213;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #6ea1c4;
-  --ion-color-secondary-tint: #8fc4e4;
-
-  --ion-color-tertiary: #2C3E50; /* Azul oscuro */
-  --ion-color-tertiary-rgb: 44, 62, 80;
-  --ion-color-tertiary-contrast: #ffffff;
-  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #263746;
-  --ion-color-tertiary-tint: #3e5470;
-
-  --ion-color-success: #27AE60; /* Verde suave */
-  --ion-color-success-rgb: 39, 174, 96;
-  --ion-color-success-contrast: #ffffff;
-  --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #239b55;
-  --ion-color-success-tint: #3ec97d;
-
-  --ion-color-warning: #F1C40F; /* Amarillo suave */
-  --ion-color-warning-rgb: 241, 196, 15;
-  --ion-color-warning-contrast: #000000;
-  --ion-color-warning-contrast-rgb: 0, 0, 0;
-  --ion-color-warning-shade: #d4ac0d;
-  --ion-color-warning-tint: #f4d03f;
-
-  --ion-color-danger: #E74C3C; /* Rojo apagado */
-  --ion-color-danger-rgb: 231, 76, 60;
-  --ion-color-danger-contrast: #ffffff;
-  --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #c44134;
-  --ion-color-danger-tint: #eb665a;
-
-  --ion-color-dark: #1e272e; /* Gris oscuro */
-  --ion-color-dark-rgb: 30, 39, 46;
-  --ion-color-dark-contrast: #ffffff;
-  --ion-color-dark-contrast-rgb: 255, 255, 255;
-  --ion-color-dark-shade: #1b2329;
-  --ion-color-dark-tint: #232d34;
-
-  --ion-color-medium: #95A5A6; /* Gris intermedio */
-  --ion-color-medium-rgb: 149, 165, 166;
-  --ion-color-medium-contrast: #000000;
-  --ion-color-medium-contrast-rgb: 0, 0, 0;
-  --ion-color-medium-shade: #839193;
-  --ion-color-medium-tint: #a8b6b7;
-
-  --ion-color-light: #ecf0f1; /* Blanco grisáceo */
-  --ion-color-light-rgb: 236, 240, 241;
-  --ion-color-light-contrast: #000000;
-  --ion-color-light-contrast-rgb: 0, 0, 0;
-  --ion-color-light-shade: #d6d9da;
-  --ion-color-light-tint: #f2f5f6;
+  /* Fondos y texto por defecto */
+  --ion-background-color: #F2F5FA;
+  --ion-text-color: #2C3E50;
 }
 
-/* Estilo para el modo oscuro */
-.ios body.dark, .md body.dark {
-  --ion-background-color: #1C1C1E; /* Fondo oscuro */
-  --ion-background-color-rgb: 28, 28, 30;
-  --ion-text-color: #F5F5F5; /* Texto claro */
-  --ion-text-color-rgb: 245, 245, 245;
+body.dark {
+  /* Fondo oscuro */
+  --ion-background-color: #000000; /* Fondo negro */
+  --ion-text-color: #ffffff; /* Texto blanco para contraste */
+ 
 
-  --ion-item-background: #2C2C2E; /* Fondo de items */
-  --ion-card-background: #2C2C2E; /* Fondo de tarjetas */
-  --ion-toolbar-background: #1E1E1F; /* Fondo del toolbar */
-  --ion-tab-bar-background: #1E1E1F; /* Fondo de la barra de tabs */
-}
 
-/* Estilo para el modo claro */
-.ios body, .md body {
-  --ion-background-color: #F2F5FA; /* Fondo claro */
-  --ion-text-color: #2C3E50; /* Azul oscuro para el texto */
-  --ion-item-background: #FFFFFF; /* Fondo de items */
-  --ion-card-background: #FFFFFF; /* Fondo de tarjetas */
-  --ion-toolbar-background: #4A90E2; /* Fondo del toolbar */
+
 }

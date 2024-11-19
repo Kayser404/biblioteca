@@ -1,12 +1,8 @@
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * Este archivo aplica estilos globales para toda la app. Contiene los estilos
+ * base y ajustes necesarios para soportar el modo claro y oscuro.
  */
 
 /* Core CSS required for Ionic components to work properly */
@@ -28,29 +24,92 @@
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
+ * Mantiene el diseño con fondo oscuro pero respetando los colores de :root.
  */
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* Fondo oscuro */
+body.dark {
+  --ion-background-color: #000000; /* Fondo negro */
+  --ion-text-color: #ffffff; /* Texto blanco para contraste */
+}
 
-/* This sets a different background and item background in light mode on ios */
-.ios body {
-    --ion-background-color: #f2f2f6;
-    --ion-toolbar-background: var(--ion-background-color);
-    --ion-item-background: #fff;
+/* Fondo y texto en modo claro */
+body {
+  --ion-background-color: #f9f9f9; /* Fondo claro */
+  --ion-text-color: #2C3E50; /* Texto oscuro */
+}
+
+/* Transiciones suaves entre temas */
+body, ion-content {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estilo global para la tipografía */
+body, ion-content, ion-card, ion-item, ion-button {
+  font-family: "Georgia", serif;
+}
+
+/* Estilo específico para componentes */
+ion-header, ion-footer, ion-toolbar, ion-title {
+  font-family: "Georgia", serif;
+}
+
+/* Estilo para tarjetas */
+ion-card {
+  background-color: var(--ion-light); /* Fondo cálido */
+  color: var(--ion-dark); /* Texto marrón oscuro */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+body.dark ion-card {
+  background-color: var(--ion-light); /* Mantener el fondo cálido */
+  color: var(--ion-dark); /* Texto marrón oscuro */
+}
+
+/* Estilo para botones */
+ion-button {
+  background-color: var(--button-background-color);
+  color: var(--button-text-color);
+  border-radius: var(--button-border-radius);
+
+  &:hover {
+    background-color: var(--button-hover-color);
   }
+}
+
+/* Botones en modo oscuro */
+body.dark ion-button {
+  background-color: var(--button-background-color); /* Igual que en modo claro */
+  color: var(--button-text-color);
+}
+
+/* Sidebar (ion-menu) */
+ion-menu {
+  --ion-background-color: var(--ion-background-color);
+  --ion-text-color: var(--ion-text-color);
+}
+
+body.dark ion-menu {
+  --ion-background-color: #000000; /* Fondo negro */
+  --ion-text-color: #ffffff; /* Texto blanco */
   
-  /* This sets a different background and item background in light mode on md */
-  .md body {
-    --ion-background-color: #f9f9f9;
-    --ion-toolbar-background: var(--ion-background-color);
-    --ion-item-background: #fff;
-  }
-  
-  /* This is added for the flashing that happens when toggling between themes */
-  ion-item {
-    --transition: none;
-  }
+}
+
+/* Items dentro del sidebar */
+ion-item {
+  color: var(--ion-text-color);
+}
+
+body.dark ion-item {
+  color: var(--ion-text-color);
+}
+
+
+ion-menu ion-icon {
+  color: var(--icon-color); /* Usa el color dinámico */
+  transition: color 0.3s ease; /* Transición suave al cambiar de tema */
+}
+
+body.dark ion-menu ion-icon {
+  color: var(--icon-color); /* Cambia el color en modo oscuro */
+}

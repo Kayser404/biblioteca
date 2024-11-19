@@ -57,7 +57,7 @@
                   </ion-col>
                 </ion-item>
                 <p class="error-message" *ngIf="respuestaError">{{ respuestaError }}</p>
-                <ion-button [disabled]="!respuestaForm.valid" (click)="enviarRespuesta()" fill="outline" shape="round"
+                <ion-button expand="block" [disabled]="!respuestaForm.valid" (click)="enviarRespuesta()"
                   color="danger" >Enviar</ion-button>
               </form>
             </ion-content>

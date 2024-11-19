@@ -587,23 +587,30 @@ export class DbService {
   // Método para obtener una publicación por su ID
   obtenerPublicacionPorId(idPublicacion: any): Promise<any> {
     return this.database
-      .executeSql('SELECT * FROM Publicacion WHERE id_publicacion = ?', [
-        idPublicacion,
-      ])
+      .executeSql(
+        `SELECT * FROM Publicacion p 
+         INNER JOIN Usuario u ON p.id_usuarioFK = u.id_usuario 
+         WHERE id_publicacion = ?`, 
+        [idPublicacion]
+      )
       .then((res) => {
         if (res.rows.length > 0) {
-          // Si se encuentra la publicación, devolvemos el objeto con sus datos
+          // Retornar el primer resultado directamente como objeto
+          const item = res.rows.item(0);
           return {
-            idPublicacion: res.rows.item(0).id_publicacion,
-            titulo: res.rows.item(0).titulo,
-            sinopsis: res.rows.item(0).sinopsis,
-            fechaPublicacion: res.rows.item(0).fechaPublicacion,
-            foto: res.rows.item(0).foto,
-            pdf: res.rows.item(0).pdf,
-            estado: res.rows.item(0).estado,
-            observacion: res.rows.item(0).observacion,
-            usuarioFK: res.rows.item(0).id_usuarioFK,
-            categoriaFK: res.rows.item(0).id_categoriaFK,
+            idPublicacion: item.id_publicacion,
+            titulo: item.titulo,
+            sinopsis: item.sinopsis,
+            fechaPublicacion: item.fechaPublicacion,
+            foto: item.foto,
+            pdf: item.pdf,
+            estado: item.estado,
+            observacion: item.observacion,
+            usuarioFK: item.id_usuarioFK,
+            categoriaFK: item.id_categoriaFK,
+            // Campos de Usuario
+            nombreAutor: item.nombreUsuario,
+            apellidoAutor: item.apellidoUsuario,
           };
         } else {
           // Si no se encuentra ninguna publicación con ese ID
@@ -614,7 +621,7 @@ export class DbService {
         console.error('Error al obtener la publicación por ID:', error);
         return null;
       });
-  }
+  }  
   // Método para modificar el estado de la publicación
   aprobarRechazarPublicacionPorId(
     idPublicacion: number,

@@ -1,5 +1,8 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
     <ion-title>nueva-contrasena</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -30,7 +33,7 @@
         *ngIf="passwordForm.controls.repetirContrasenia.invalid && passwordForm.controls.repetirContrasenia.touched">
         {{ getRepetirContraseniaMessage() }}
         </span>
-        <ion-button [disabled]="!passwordForm.valid" (click)="enviar()" fill="outline" shape="round" color="danger">Enviar</ion-button>
+        <ion-button expand="block" [disabled]="!passwordForm.valid" (click)="enviar()" color="danger">Enviar</ion-button>
       </ion-row>
     </form>
   </ion-grid>
