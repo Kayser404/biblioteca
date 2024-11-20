@@ -847,10 +847,10 @@ export class DbService {
           this.database = db;
           //llamo a la creación de las tablas
           this.crearTablas();
-          this.presentAlert('Bd Creada con exito');
+          /* this.presentAlert('Bd Creada con exito'); */
         })
         .catch((e) => {
-          this.presentAlert('Error en crear BD: ' + e);
+          /* this.presentAlert('Error en crear BD: ' + e); */
         });
     });
   }
@@ -895,7 +895,7 @@ export class DbService {
 
   async presentAlert(msj: string) {
     const alert = await this.alertController.create({
-      header: 'Usuarios, saluden a Blackend',
+      /* header: 'Usuarios, saluden a Blackend', */
       message: msj,
       buttons: ['OK'],
     });
