@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DbService } from 'src/app/services/db.service';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-login',
@@ -11,7 +12,7 @@ import { DbService } from 'src/app/services/db.service';
 export class LoginPage implements OnInit {
 
   loginForm = this.fb.group({
-    email: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required]
   });
 
@@ -36,7 +37,7 @@ export class LoginPage implements OnInit {
   }
 
   // Método para iniciar sesión
-  login() {
+  async login() {
     if (this.loginForm.valid) {
       const emailControl = this.loginForm.value.email;
       const passwordControl = this.loginForm.value.password;
@@ -45,41 +46,48 @@ export class LoginPage implements OnInit {
         const email = emailControl;
         const password = passwordControl;
   
-        this.db.verificarCredenciales(email, password)
-          .then((usuario) => {
-            if (usuario) {
-              // Aquí eliminamos la parte de roles y almacenamientos innecesarios
-              localStorage.setItem('idUsuario', usuario.id_usuario);
-              localStorage.setItem('rolId', usuario.rolFK);
+        try {
+          const usuario = await this.db.verificarCredenciales(email, password);
+          if (usuario) {
+            // Credenciales correctas
+            localStorage.setItem('idUsuario', usuario.id_usuario);
+            localStorage.setItem('rolId', usuario.rolFK);
   
-              // Borrar inputs del formulario
-              this.loginForm.patchValue({
-                email: '',
-                password: ''
-              });
+            // Borrar inputs del formulario
+            this.loginForm.patchValue({
+              email: '',
+              password: ''
+            });
 
-              // Redirigir a la página deseada después de iniciar sesión
-              this.router.navigate(['/home']);
-            } else {
-              this.errorMessages.email = 'Email o contraseña inválidos';
-              this.errorMessages.password = 'Email o contraseña inválidos';
-            }
-          })
-          .catch(error => {
-            // Manejar errores de la base de datos
-            this.db.presentAlert("Error en la base de datos");
-          });
+            // Redirigir a la página deseada después de iniciar sesión
+            this.router.navigate(['/home']);
+          } else {
+            // Credenciales incorrectas, activar vibración y mostrar error
+            await this.triggerVibration();
+            this.errorMessages.email = 'Email o contraseña inválidos';
+            this.errorMessages.password = 'Email o contraseña inválidos';
+          }
+        } catch (error) {
+          // Manejar errores de la base de datos
+          this.db.presentAlert("Error en la base de datos");
+        }
       }
     } else {
       console.log('Formulario inválido');
     }
-  }  
+  }
+
+  // Método para activar la vibración
+  async triggerVibration() {
+    await Haptics.impact({ style: ImpactStyle.Heavy }); // Vibración media
+  }
 
   // Redirección al registro
   goToRegister() {
     this.router.navigate(['/registro-usuario']);
   }
-  // Redirección al registro
+
+  // Redirección a recuperación de contraseña
   goToRecover() {
     this.router.navigate(['/recuperar']);
   }
