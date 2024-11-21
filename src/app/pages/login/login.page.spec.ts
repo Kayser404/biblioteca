@@ -31,7 +31,7 @@ describe('LoginPage', () => {
   });
 
 
-  it('Debe validar el campo de correo electrónico como obligatorio', () => {
+  it('Debe validar el campo de correo electronico como obligatorio', () => {
     const emailControl = component.loginForm.controls['email'];
     emailControl.setValue('');
     expect(emailControl.valid).toBeFalsy();

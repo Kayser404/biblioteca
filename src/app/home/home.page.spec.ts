@@ -35,4 +35,26 @@ describe('HomePage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('debería obtener un chiste y asignarlo correctamente', () => {
+    const jokeMock = { type: 'single', joke: '¡Este es un chiste de prueba!' };
+    const restSpy = spyOn(component['rest'], 'getRandomJoke').and.returnValue({
+      subscribe: (success: (data: any) => void) => success(jokeMock),
+    } as any);
+  
+    component.ngOnInit();
+  
+    expect(restSpy).toHaveBeenCalled(); // Asegura que se llama a getRandomJoke
+    expect(component.joke).toBe(jokeMock.joke); // Verifica que el chiste se asigna correctamente
+  });
+  
+  it('debería navegar a la página de detalles con el libro proporcionado', () => {
+    const routerSpy = spyOn(component['router'], 'navigate');
+    const libroMock = { id: 1, titulo: 'Libro de prueba' };
+  
+    component.verDetalles(libroMock);
+  
+    expect(routerSpy).toHaveBeenCalledWith(['/detalle-libro'], { state: { libro: libroMock } });
+  });
+  
 });

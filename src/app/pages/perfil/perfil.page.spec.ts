@@ -29,4 +29,33 @@ describe('PerfilPage', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('debería activar y desactivar el modo de edición correctamente', () => {
+    // Simular usuario y datos originales
+    component.usuarioOriginal = { nombreUsuario: 'Original' };
+    component.usuarioForm.patchValue({ nombreUsuario: 'Modificado' });
+  
+    // Activar el modo de edición
+    component.editMode = false;
+    component.toggleEditMode();
+    expect(component.editMode).toBeTrue();
+  
+    // Desactivar el modo de edición y restaurar valores originales
+    component.toggleEditMode();
+    expect(component.editMode).toBeFalse();
+    expect(component.usuarioForm.value.nombreUsuario).toBe('Original');
+  });
+  
+  it('debería manejar correctamente el modo de edición si no hay usuario cargado', () => {
+    component.usuarioOriginal = null;
+    component.usuarioForm.patchValue({ nombreUsuario: 'Modificado' });
+  
+    component.editMode = false;
+    component.toggleEditMode();
+  
+    expect(component.editMode).toBeTrue();
+    expect(() => component.toggleEditMode()).not.toThrow();
+  });
+  
+  
 });

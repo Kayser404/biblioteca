@@ -79,7 +79,7 @@ export class LoginPage implements OnInit {
 
   // Método para activar la vibración
   async triggerVibration() {
-    await Haptics.impact({ style: ImpactStyle.Heavy }); // Vibración media
+    await Haptics.impact({ style: ImpactStyle.Heavy }); // Vibración 
   }
 
   // Redirección al registro
