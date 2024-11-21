@@ -107,7 +107,10 @@ export class DbService {
     "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('1', 'admin')";
 
   usuarioAdmin: string =
-    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('1', 'admin@example.com', 'admin123', 'Admin', 'User', 30, '1' );";
+    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('1', 'admin@example.com', 'admin123', 'Admin', 'User', 01-01-2000, '1' );";
+
+  usuarioAdmin2: string =
+    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('2', 'admin2@example.com', 'admin123', 'Admin2', 'User2', 01-01-2000, '1' );";
 
   //Insertar Categoria
   categoriaDrama: string =
@@ -868,6 +871,8 @@ export class DbService {
 
       // Insertar registros
       await this.database.executeSql(this.rolAdmin, []);
+      await this.database.executeSql(this.usuarioAdmin, []);
+      await this.database.executeSql(this.usuarioAdmin2, []);
       await this.database.executeSql(this.categoriaDrama, []);
       await this.database.executeSql(this.categoriaFantasia, []);
       await this.database.executeSql(this.categoriaRomance, []);
