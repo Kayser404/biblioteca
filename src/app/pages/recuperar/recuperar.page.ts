@@ -10,15 +10,11 @@ import { DbService } from 'src/app/services/db.service';
   styleUrls: ['./recuperar.page.scss'],
 })
 export class RecuperarPage implements OnInit {
-  async canDismiss(data?: any, role?: string) {
-    return role !== 'gesture';
-  }
-
-  isModalOpen = false;
-
-  setOpen(isOpen: boolean) {
-    this.isModalOpen = isOpen;
-  }
+  preguntasSeguridad: string[] = [
+    '¿Cuál es el nombre de tu primera mascota?',
+    '¿Cuál es tu color favorito?',
+    '¿Cuál es el nombre de tu mejor amigo?',
+  ];
 
   emailForm = this.formBuilder.group({
     email: [
@@ -32,79 +28,78 @@ export class RecuperarPage implements OnInit {
   });
 
   respuestaForm = this.formBuilder.group({
+    pregunta: ['', [Validators.required]],
     respuesta: ['', [Validators.required]],
   });
 
-  preguntaRespuesta: any = {};
+  preguntaRespuesta: { pregunta: string; respuesta: string } | null = null;
+  pregunta: string | null = null;
+  idUsuario: number | null = null;
 
   respuestaError: string = '';
-
-  idUsuario: any;
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private db: DbService,
-    private modalCtrl: ModalController
-  ) {
-    this.preguntaRespuesta = {};
-    this.idUsuario = null;
-  }
-
-  ionViewWillEnter() {
-    // Cierra el modal cuando esta página se está cargando
-    this.modalCtrl.dismiss();
-  }
+    private db: DbService
+  ) {}
 
   ngOnInit() {}
 
-  /* Metodo para enviar */
   enviar() {
     if (this.emailForm.valid) {
-      const emailControl = this.emailForm.value.email;
-      if (emailControl) {
-        const email = emailControl;
-        // Realiza una solicitud a tu servicio para verificar el correo
-        this.db
-          .verificarEmail(email)
-          .then((idUsuario) => {
-            if (idUsuario) {
-              this.idUsuario = idUsuario;
-              this.db
-                .obtenerPreguntaRespuesta(idUsuario)
-                .then((preguntaRespuesta) => {
-                  if (preguntaRespuesta) {
-                    // Procesar y mostrar las preguntas y respuestas en el modal
-                    this.preguntaRespuesta = preguntaRespuesta;
-                    this.setOpen(true);
-                  } else {
-                    // No se encontraron registros para el usuario
-                    /* this.db.presentAlert("No existen preguntas y respuestas asociadas al usuario"); */
-                  }
-                });
-            } else {
-              /* this.db.presentAlert("No existe una cuenta asociada al correo"); */
-            }
-          })
-          .catch((error) => {
-            // Manejar errores de la base de datos
-            /* this.db.presentAlert("Error en la base de datos"); */
-          });
-      }
+      const email = this.emailForm.value.email;
+      this.db
+        .verificarEmail(email)
+        .then((idUsuario) => {
+          if (idUsuario) {
+            this.idUsuario = idUsuario; // Guardar el ID del usuario
+            this.db
+              .obtenerPreguntaRespuesta(idUsuario)
+              .then((preguntaRespuesta) => {
+                if (preguntaRespuesta) {
+                  this.preguntaRespuesta = preguntaRespuesta; // Almacenar pregunta y respuesta
+                  this.pregunta = preguntaRespuesta.pregunta; // Mostrar la pregunta en la vista
+                } else {
+                  this.preguntaRespuesta = null; // Limpiar si no se encuentra nada
+                  this.db.presentAlert(
+                    'No se encontró una pregunta asociada a este usuario.'
+                  );
+                }
+              });
+          } else {
+            this.db.presentAlert(
+              'No existe una cuenta asociada a este correo.'
+            );
+          }
+        })
+        .catch((error) => {
+          console.error('Error al verificar el correo:', error);
+          this.db.presentAlert('Error en la base de datos.');
+        });
     }
   }
+
   enviarRespuesta() {
     if (this.respuestaForm.valid) {
-      const respuestaIngresada = this.respuestaForm.value.respuesta;
-      if (respuestaIngresada === this.preguntaRespuesta.respuesta) {
+      const preguntaSeleccionada = this.respuestaForm.value.pregunta; // Pregunta seleccionada
+      const respuestaIngresada = this.respuestaForm.value.respuesta; // Respuesta ingresada
+  
+      // Validar pregunta y respuesta
+      if (
+        preguntaSeleccionada === this.preguntaRespuesta?.pregunta &&
+        respuestaIngresada === this.preguntaRespuesta?.respuesta
+      ) {
+        // Redirigir al usuario si todo es correcto
         this.router.navigate(['/nueva-contrasena', this.idUsuario]);
-        this.modalCtrl.dismiss();
       } else {
+        // Mostrar mensaje de error si no coinciden
         this.respuestaError =
-          'La respuesta no es correcta. Por favor, inténtalo de nuevo.';
+          'La pregunta o la respuesta no son correctas. Inténtalo de nuevo.';
       }
     }
-  }
+  }  
+
   getCorreoMessage() {
     const emailControl = this.emailForm.controls.email;
 

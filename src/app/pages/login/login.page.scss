@@ -1,55 +1,67 @@
-/* Fondo temático de libros y cómics */
-.login-background {
-    background-image: url('/assets/img/library-background.jpg'); /* Aquí va tu imagen de fondo */
-    background-size: cover;
-    background-position: center;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  /* Contenedor del logo */
-  .logo-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 40px;
-  }
-  
-  /* Estilo del logo */
-  .logo {
-   
-    border-radius: 50%;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Estilos del formulario */
-  .form-container {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Estilo del botón de inicio de sesión */
-  .login-button {
-    --background: #FFC107;
-    --color: white;
-    margin-top: 20px;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 1rem;
-    height: 50px;
-  }
-  
-  /* Opción de registro */
-  .register-container {
-    text-align: center;
-    margin-top: 20px;
-  }
-  
-  .register-container a {
-    color: #2196F3;
-    font-weight: bold;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-  
+/* Estilo del título de la app */
+.app-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFC107; /* Amarillo cálido */
+}
+
+/* Título de la página */
+.page-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #444; /* Gris oscuro */
+  margin: 20px 0;
+}
+
+/* Contenedor del logo */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo del logo */
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 15px; /* Redondeo más marcado */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos del formulario */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espaciado entre elementos */
+}
+
+/* Botón de inicio de sesión */
+.login-button {
+  --background: #FFC107; /* Amarillo cálido */
+  --color: white;
+  margin-top: 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  height: 50px;
+}
+
+/* Opciones de registro */
+.register-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.register-container a {
+  color: #2196F3;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Mensajes de error */
+ion-text[color="danger"] {
+  font-size: 0.85rem;
+  margin-top: 5px;
+}

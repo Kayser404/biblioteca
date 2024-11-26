@@ -98,7 +98,31 @@ export class RegistroUsuarioPage implements OnInit {
       console.log('Formulario inválido');
     }
   }
+
+  // Método para verificar si el correo ya existe
+  async verificarEmail() {
+    const email = this.registroForm.get('email')?.value;
   
+    if (!email) {
+      return; // Si no hay valor, no se verifica
+    }
+  
+    try {
+      const res = await this.db.verificarEmailExistente(email);
+      if (res.rows.length > 0) {
+        // Si el correo existe, establecer el error personalizado
+        this.registroForm.get('email')?.setErrors({ emailExists: true });
+      } else {
+        // Si no existe, limpiar el error personalizado
+        const currentErrors = this.registroForm.get('email')?.errors || {};
+        delete currentErrors['emailExists'];
+        this.registroForm.get('email')?.setErrors(Object.keys(currentErrors).length > 0 ? currentErrors : null);
+      }
+    } catch (error) {
+      console.error('Error al verificar el correo:', error);
+    }
+  }  
+    
   // Validación Fecha de Nacimiento
   edadMayor(control: any) {
     const fechaNacimiento = control.value;
@@ -142,7 +166,7 @@ export class RegistroUsuarioPage implements OnInit {
 
   getEmailMessage() {
     const emailControl = this.registroForm.controls['email'];
-
+  
     if (emailControl.hasError('required')) {
       return 'Este campo es requerido.';
     }
@@ -152,8 +176,11 @@ export class RegistroUsuarioPage implements OnInit {
     if (emailControl.hasError('pattern')) {
       return 'Formato de email inválido.';
     }
+    if (emailControl.hasError('emailExists')) {
+      return 'Este correo ya está registrado.';
+    }
     return '';
-  }
+  }  
 
   // Validación Nombre
   getNombresMessage() {

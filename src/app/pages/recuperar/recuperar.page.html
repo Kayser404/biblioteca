@@ -1,69 +1,71 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>recuperar</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Recuperar Contraseña</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- Título -->
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Recuperar contraseña</ion-title>
+      <ion-title size="large">Recuperar Contraseña</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Recupera tu contraseña</ion-card-title>
-      <ion-card-subtitle>Para recuperar tu contraseña ingresa el correo con el cual te registraste.</ion-card-subtitle>
+      <ion-card-title>Recupera tu Contraseña</ion-card-title>
+      <ion-card-subtitle>Ingresa tu correo para continuar.</ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
+      <!-- Formulario para correo -->
       <form [formGroup]="emailForm" (ngSubmit)="enviar()">
-        <ion-list>
-          <ion-item>
-            <ion-input formControlName="email" labelPlacement="floating" value="">
-              <div slot="label">Email <ion-text color="danger">(Obligatorio)</ion-text></div>
-            </ion-input>
-          </ion-item>
-          <span *ngIf="emailForm.controls.email.invalid && emailForm.controls.email.touched" class="error-message">
-            {{ getCorreoMessage() }}
-          </span>
-        </ion-list>
+        <ion-item>
+          <ion-label position="floating">Correo Electrónico</ion-label>
+          <ion-input formControlName="email"></ion-input>
+        </ion-item>
+        <p *ngIf="emailForm.controls.email.invalid && emailForm.controls.email.touched" class="error-message">
+          {{ getCorreoMessage() }}
+        </p>
+        <ion-button class="send-button" expand="block" [disabled]="!emailForm.valid" type="submit">Enviar Correo</ion-button>
       </form>
+
+      <!-- Mostrar pregunta y respuesta si el correo es válido -->
+      <div *ngIf="pregunta">
+        <ion-card-subtitle>Responde la siguiente pregunta de seguridad:</ion-card-subtitle>
+        <form [formGroup]="respuestaForm" (ngSubmit)="enviarRespuesta()">
+          <!-- Selector para la pregunta -->
+          <ion-item>
+            <ion-select formControlName="pregunta" placeholder="Selecciona una pregunta">
+              <ion-select-option *ngFor="let pregunta of preguntasSeguridad" [value]="pregunta">
+                {{ pregunta }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        
+          <!-- Campo para la respuesta -->
+          <ion-item>
+            <ion-label position="floating">Respuesta</ion-label>
+            <ion-input formControlName="respuesta"></ion-input>
+          </ion-item>
+        
+          <!-- Validaciones de error -->
+          <p *ngIf="respuestaForm.controls.pregunta.invalid && respuestaForm.controls.pregunta.touched" class="error-message">
+            Selecciona una pregunta de seguridad.
+          </p>
+          <p *ngIf="respuestaForm.controls.respuesta.invalid && respuestaForm.controls.respuesta.touched" class="error-message">
+            La respuesta es obligatoria.
+          </p>
+          <p class="error-message" *ngIf="respuestaError">{{ respuestaError }}</p>
+        
+          <!-- Botón para enviar -->
+          <ion-button class="send-button" expand="block" [disabled]="!respuestaForm.valid" type="submit">Enviar Respuesta</ion-button>
+        </form>        
+      </div>
     </ion-card-content>
-  </ion-card>
-  <ion-button fill="outline" [disabled]="!emailForm.valid" shape="round" color="danger" (click)="enviar()"
-    expand="block">Enviar</ion-button>
-  <ion-card>
-    <div #page>
-      <ion-content>
-        <ion-modal #modal [isOpen]="isModalOpen" [canDismiss]="canDismiss" [presentingElement]="page">
-          <ng-template>
-            <ion-header>
-              <ion-toolbar>
-                <ion-title>Ingrese su pregunta.</ion-title>
-                <ion-buttons slot="end">
-                  <ion-button (click)="modal.dismiss()">Close</ion-button>
-                </ion-buttons>
-              </ion-toolbar>
-            </ion-header>
-            <ion-content class="ion-padding">
-              <form [formGroup]="respuestaForm" (ngSubmit)="enviarRespuesta()">
-                <ion-item>
-                  <ion-col size="12">
-                    <ion-label *ngIf="preguntaRespuesta.pregunta">{{ preguntaRespuesta.pregunta }}</ion-label>
-                    <ion-input formControlName="respuesta" label-placement="floating"
-                      label="Respuesta de la pregunta de seguridad" placeholder="Ingrese su espuesta"></ion-input>
-                  </ion-col>
-                </ion-item>
-                <p class="error-message" *ngIf="respuestaError">{{ respuestaError }}</p>
-                <ion-button expand="block" [disabled]="!respuestaForm.valid" (click)="enviarRespuesta()"
-                  color="danger" >Enviar</ion-button>
-              </form>
-            </ion-content>
-          </ng-template>
-        </ion-modal>
-      </ion-content>
-    </div>
   </ion-card>
 </ion-content>

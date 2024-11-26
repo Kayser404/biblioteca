@@ -11,7 +11,7 @@
   <form [formGroup]="registroForm" (ngSubmit)="enviar()">
     <ion-item>
       <ion-label position="floating">Correo Electrónico</ion-label>
-      <ion-input type="email" formControlName="email"></ion-input>
+      <ion-input type="email" formControlName="email" (ionBlur)="verificarEmail()"></ion-input>
     </ion-item>
     <span
       *ngIf="registroForm.get('email')?.invalid && registroForm.get('email')?.touched"
@@ -107,7 +107,7 @@
       <ion-text color="danger">La respuesta es requerida</ion-text>
     </div>
 
-    <ion-button expand="full" type="submit" [disabled]="registroForm.invalid"
+    <ion-button class="send-button" expand="full" type="submit" [disabled]="registroForm.invalid"
       >Registrar</ion-button
     >
   </form>

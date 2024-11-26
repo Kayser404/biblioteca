@@ -1,68 +1,44 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title class="title-center">Iniciar Sesión</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="ion-padding login-background">
-  <ion-list>
-    <ion-item *ngFor="let usuario of usuarios">
-      <ion-label>
-        <h2>{{ usuario.nombreUsuario }} {{ usuario.apellidoUsuario }}</h2>
-        <p>Email: {{ usuario.email }}</p>
-        <p>Edad: {{ usuario.edadUsuario }}</p>
-        <p>Pass: {{ usuario.password }}</p>
-        <p>id: {{ usuario.idUsuario }}</p>
-        
-      </ion-label>
-    </ion-item>
-  </ion-list>
-  
+  <!-- Título del formulario -->
+  <h1 class="page-title">Iniciar Sesión</h1>
 
-  <!-- Logo relacionado con libros y cómics -->
+  <!-- Logo -->
   <div class="logo-container">
     <ion-img src="../../../assets/img/darklit.png" alt="Logo" class="logo"></ion-img>
   </div>
 
   <!-- Formulario de inicio de sesión -->
   <form [formGroup]="loginForm" (ngSubmit)="login()" class="form-container">
-
     <ion-item lines="full">
       <ion-label position="floating">Correo Electrónico</ion-label>
       <ion-input type="email" formControlName="email"></ion-input>
     </ion-item>
-    <div *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)">
-      <ion-text color="danger">Correo inválido</ion-text>
-    </div>
-    <div *ngIf="errorMessages.email" class="error-message">
-      <ion-text color="danger">{{ errorMessages.email }}</ion-text>
-    </div>
+    <ion-text *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)" color="danger">
+      Correo inválido
+    </ion-text>
+    <ion-text *ngIf="errorMessages.email" color="danger">{{ errorMessages.email }}</ion-text>
 
     <ion-item lines="full">
       <ion-label position="floating">Contraseña</ion-label>
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
-    <div
-      *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)">
-      <ion-text color="danger">Contraseña inválida</ion-text>
-    </div>
-    <div *ngIf="errorMessages.password" class="error-message">
-      <ion-text color="danger">{{ errorMessages.password }}</ion-text>
-    </div>
+    <ion-text *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)" color="danger">
+      Contraseña inválida
+    </ion-text>
+    <ion-text *ngIf="errorMessages.password" color="danger">{{ errorMessages.password }}</ion-text>
 
     <ion-button expand="block" type="submit" [disabled]="loginForm.invalid" class="login-button">
       Iniciar Sesión
     </ion-button>
   </form>
 
-  <!-- Opción de registro -->
+  <!-- Opciones de registro y recuperación -->
   <div class="register-container">
-    <ion-text>
+    <p>
       ¿No tienes cuenta? <a (click)="goToRegister()">Regístrate aquí</a>
-    </ion-text>
-    <ion-text>
+    </p>
+    <p>
       ¿Olvidaste tu Contraseña? <a (click)="goToRecover()">Recuperar aquí</a>
-    </ion-text>
+    </p>
   </div>
-
 </ion-content>

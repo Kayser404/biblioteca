@@ -339,7 +339,16 @@ export class DbService {
         return false;
       });
   }
-
+  async verificarEmailExistente(email: string): Promise<any> {
+    const query = 'SELECT id_usuario FROM Usuario WHERE email = ?';
+    try {
+      const res = await this.database.executeSql(query, [email]);
+      return res;
+    } catch (error) {
+      console.error('Error en la consulta de verificarEmail:', error);
+      throw error;
+    }
+  }  
   verificarEmail(email: any) {
     return this.database
       .executeSql('SELECT id_usuario FROM Usuario WHERE email = ?', [email])
