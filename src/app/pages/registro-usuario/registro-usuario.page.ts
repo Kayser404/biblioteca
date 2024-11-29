@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DbService } from 'src/app/services/db.service';
 import { Router } from '@angular/router';
-
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-registro-usuario',
@@ -43,12 +43,24 @@ export class RegistroUsuarioPage implements OnInit {
         this.edadMayor,
         Validators.pattern(/^(\d{2}-\d{2}-\d{4})$/)
       ]],
+      foto: ['', Validators.required],
       pregunta: ['', Validators.required],
       respuesta: ['', Validators.required],
     }, { validator: this.passwordsMatchValidator });    
   }
 
   ngOnInit() {}
+
+  /* Camara */
+  async takePicture() {
+    const image2 = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Prompt
+    });
+    this.registroForm.patchValue({ foto: image2.dataUrl });
+  }
 
   // Validador personalizado para verificar que las contraseñas coincidan
   passwordsMatchValidator(form: FormGroup) {
@@ -64,6 +76,7 @@ export class RegistroUsuarioPage implements OnInit {
     const nombreUsuario = this.registroForm.value.nombreUsuario;
     const apellidoUsuario = this.registroForm.value.apellidoUsuario;
     const fechaNacimiento = this.registroForm.value.fechaNacimiento;
+    const foto = this.registroForm.value.foto;
     const pregunta = this.registroForm.value.pregunta;
     const respuesta = this.registroForm.value.respuesta;
 
@@ -82,7 +95,7 @@ export class RegistroUsuarioPage implements OnInit {
       console.log('Formulario válido, enviando los siguientes datos:', this.registroForm.value);
 
       // Aquí iría la lógica para enviar los datos a la base de datos
-      this.db.registrarUsuario(email, password, nombreUsuario, apellidoUsuario, fechaNacimiento)
+      this.db.registrarUsuario(email, password, nombreUsuario, apellidoUsuario, fechaNacimiento, foto)
         .then(idUsuario => {
           return this.db.agregarPreguntaRespuesta(pregunta, respuesta, idUsuario)
             .then(() => {

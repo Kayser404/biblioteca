@@ -1,28 +1,31 @@
 :root {
-  /* Tema claro (y colores globales para ambos temas) */
+  /* Tema claro */
   --ion-color-primary: #8B4513; /* Marrón madera */
   --ion-color-secondary: #D2B48C; /* Beige claro */
   --ion-color-tertiary: #A0522D; /* Marrón rojizo */
   --ion-color-light: #FFF8E7; /* Blanco cálido */
-  --ion-color-dark: #5C4033; /* Marrón oscuro */
+  --ion-color-dark: #06111b; /* Marrón oscuro para texto en modo claro */
 
-  /* Colores globales para botones */
+  /* Fondos y texto */
+  --ion-background-color: #F2F5FA; /* Fondo claro */
+  --ion-text-color: #06111b; /* Texto oscuro para modo claro */
+
+  /* Colores de botones */
   --button-background-color: #ffffff;
   --button-text-color: #333333;
   --button-border-radius: 6px;
   --button-hover-color: #f2f2f2;
-
-  /* Fondos y texto por defecto */
-  --ion-background-color: #F2F5FA;
-  --ion-text-color: #2C3E50;
 }
 
 body.dark {
-  /* Fondo oscuro */
-  --ion-background-color: #000000; /* Fondo negro */
-  --ion-text-color: #ffffff; /* Texto blanco para contraste */
- 
+  /* Tema oscuro */
+  --ion-color-primary: #D2B48C; /* Beige claro como color primario */
+  --ion-color-secondary: #8B4513; /* Marrón madera */
+  --ion-color-tertiary: #FFF8E7; /* Blanco cálido */
+  --ion-color-light: #333333; /* Gris oscuro */
+  --ion-color-dark: #ffffff; /* Blanco para texto en modo oscuro */
 
-
-
+  /* Fondos y texto */
+  --ion-background-color: #000000; /* Fondo oscuro */
+  --ion-text-color: #ffffff; /* Texto blanco para modo oscuro */
 }

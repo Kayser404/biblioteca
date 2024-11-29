@@ -10,6 +10,20 @@
 <ion-content class="ion-padding">
   <form [formGroup]="registroForm" (ngSubmit)="enviar()">
     <ion-item>
+      <label for="file-input" class="disfras"
+        >Imagen de Portada
+        <ion-icon class="img" name="image-outline"></ion-icon>
+        <h1>Seleccione una imagen</h1>
+      </label>
+      <input (click)="takePicture()" id="file-input" formControlName="foto" />
+      <ion-img
+        class="image"
+        [src]="registroForm.value.foto"
+        *ngIf="registroForm.value.foto"
+      ></ion-img>
+    </ion-item>
+
+    <ion-item>
       <ion-label position="floating">Correo Electrónico</ion-label>
       <ion-input type="email" formControlName="email" (ionBlur)="verificarEmail()"></ion-input>
     </ion-item>

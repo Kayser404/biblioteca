@@ -113,3 +113,10 @@ ion-menu ion-icon {
 body.dark ion-menu ion-icon {
   color: var(--icon-color); /* Cambia el color en modo oscuro */
 }
+.categoria-select {
+  color: #ffffff; /* Texto principal blanco */
+}
+
+.categoria-select ion-select-option {
+  color: #ffffff !important; /* Opciones blancas */
+}

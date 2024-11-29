@@ -40,6 +40,7 @@ export class DbService {
       nombreUsuario TEXT,
       apellidoUsuario TEXT,
       edadUsuario VARCHAR(10),
+      foto TEXT,
       id_rolFK INTEGER NULL,
       FOREIGN KEY (id_rolFK) REFERENCES Rol(id_rol)
     );
@@ -194,6 +195,7 @@ export class DbService {
             nombreUsuario: res.rows.item(i).nombreUsuario,
             apellidoUsuario: res.rows.item(i).apellidoUsuario,
             edadUsuario: res.rows.item(i).edadUsuario,
+            foto: res.rows.item(i).foto,
             rolFK: res.rows.item(i).id_rolFK,
             // Agrega más propiedades aquí si las has definido en la tabla
           });
@@ -207,12 +209,13 @@ export class DbService {
     password: any,
     nombreUsuario: any,
     apellidoUsuario: any,
-    edadUsuario: any
+    edadUsuario: any,
+    foto: any
   ) {
     return this.database
       .executeSql(
-        'INSERT INTO Usuario (email, password, nombreUsuario, apellidoUsuario, edadUsuario) VALUES (?, ?, ?, ?, ?)',
-        [email, password, nombreUsuario, apellidoUsuario, edadUsuario]
+        'INSERT INTO Usuario (email, password, nombreUsuario, apellidoUsuario, edadUsuario, foto) VALUES (?, ?, ?, ?, ?, ?)',
+        [email, password, nombreUsuario, apellidoUsuario, edadUsuario, foto]
       )
       .then(async (res) => {
         // Verificar si la inserción tuvo éxito
@@ -278,6 +281,7 @@ export class DbService {
             nombreUsuario: res.rows.item(0).nombreUsuario,
             apellidoUsuario: res.rows.item(0).apellidoUsuario,
             edadUsuario: res.rows.item(0).edadUsuario,
+            foto: res.rows.item(0).foto,
             // Agrega más propiedades aquí si las has definido en la tabla
           };
         } else {
@@ -311,6 +315,10 @@ export class DbService {
     }
     if (cambios.includes('edadUsuario')) {
       setClauses.push('edadUsuario = ?');
+      params.push(usuario.edadUsuario);
+    }
+    if (cambios.includes('foto')) {
+      setClauses.push('foto = ?');
       params.push(usuario.edadUsuario);
     }
     if (cambios.includes('password')) {
