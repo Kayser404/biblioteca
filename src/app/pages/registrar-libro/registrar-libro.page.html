@@ -35,15 +35,16 @@
         <ion-icon class="img" name="image-outline"></ion-icon>
         <h1>Seleccione una imagen</h1>
       </label>
-      <input (click)="takePicture()" id="file-input" formControlName="foto" />
+      <input (click)="takePicture()" id="file-input" formControlName="fotoPublicacion" />
       <ion-img
+        loading="lazy"
         class="image"
-        [src]="publicacionForm.value.foto"
-        *ngIf="publicacionForm.value.foto"
+        [src]="publicacionForm.value.fotoPublicacion"
+        *ngIf="publicacionForm.value.fotoPublicacion"
       ></ion-img>
     </ion-item>
     <div><ion-text color="danger">La imagen es obligatoria</ion-text></div>
-    <div *ngIf="publicacionForm.get('foto')?.invalid && (publicacionForm.get('foto')?.touched || publicacionForm.get('foto')?.dirty)">
+    <div *ngIf="publicacionForm.get('fotoPublicacion')?.invalid && (publicacionForm.get('fotoPublicacion')?.touched || publicacionForm.get('fotoPublicacion')?.dirty)">
       <ion-text color="danger">La imagen es obligatoria</ion-text>
     </div>
 

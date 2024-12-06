@@ -59,7 +59,7 @@ export class DbService {
       titulo TEXT,
       sinopsis TEXT,
       fechaPublicacion DATE,
-      foto TEXT,
+      fotoPublicacion TEXT,
       pdf TEXT,
       estado TEXT DEFAULT 'pendiente',
       observacion TEXT DEFAULT NULL,
@@ -108,10 +108,10 @@ export class DbService {
     "INSERT or IGNORE INTO Rol (id_rol, nombreRol) VALUES ('1', 'admin')";
 
   usuarioAdmin: string =
-    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('1', 'admin@example.com', 'admin123', 'Admin', 'User', 01-01-2000, '1' );";
+    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('1', 'admin@example.com', 'admin123', 'Admin', 'User', '01-01-2000', '1' );";
 
   usuarioAdmin2: string =
-    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('2', 'admin2@example.com', 'admin123', 'Admin2', 'User2', 01-01-2000, '1' );";
+    "INSERT OR IGNORE INTO Usuario (id_usuario, email, password, nombreUsuario, apellidoUsuario, edadUsuario, id_rolFK) VALUES ('2', 'admin2@example.com', 'admin123', 'Admin2', 'User2', '01-01-2000', '1' );";
 
   //Insertar Categoria
   categoriaDrama: string =
@@ -319,7 +319,7 @@ export class DbService {
     }
     if (cambios.includes('foto')) {
       setClauses.push('foto = ?');
-      params.push(usuario.edadUsuario);
+      params.push(usuario.foto);
     }
     if (cambios.includes('password')) {
       setClauses.push('password = ?');
@@ -497,7 +497,7 @@ export class DbService {
               titulo: res.rows.item(i).titulo,
               sinopsis: res.rows.item(i).sinopsis,
               fechaPublicacion: res.rows.item(i).fechaPublicacion,
-              foto: res.rows.item(i).foto,
+              fotoPublicacion: res.rows.item(i).fotoPublicacion,
               pdf: res.rows.item(i).pdf,
               estado: res.rows.item(i).estado,
               observacion: res.rows.item(i).observacion,
@@ -517,7 +517,7 @@ export class DbService {
     titulo: any,
     sinopsis: any,
     fechaPublicacion: any,
-    foto: any,
+    fotoPublicacion: any,
     pdfUrl: any,
     usuarioFK: any,
     categoriaFK: any
@@ -525,12 +525,12 @@ export class DbService {
     console.log('Intentando agregar publicación');
     return this.database
       .executeSql(
-        'INSERT INTO Publicacion (titulo, sinopsis, fechaPublicacion, foto, pdf, id_usuarioFK, id_categoriaFK) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO Publicacion (titulo, sinopsis, fechaPublicacion, fotoPublicacion, pdf, id_usuarioFK, id_categoriaFK) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [
           titulo,
           sinopsis,
           fechaPublicacion,
-          foto,
+          fotoPublicacion,
           pdfUrl,
           usuarioFK,
           categoriaFK,
@@ -559,7 +559,7 @@ export class DbService {
               titulo: res.rows.item(i).titulo,
               sinopsis: res.rows.item(i).sinopsis,
               fechaPublicacion: res.rows.item(i).fechaPublicacion,
-              foto: res.rows.item(i).foto,
+              fotoPublicacion: res.rows.item(i).fotoPublicacion,
               pdf: res.rows.item(i).pdf,
               estado: res.rows.item(i).estado,
               observacion: res.rows.item(i).observacion,
@@ -584,15 +584,15 @@ export class DbService {
   actualizarPublicacion(
     titulo: any,
     sinopsis: any,
-    foto: any,
+    fotoPublicacion: any,
     pdf: any,
     categoriaFK: any,
     idPublicacion: any
   ): Promise<any> {
     return this.database
       .executeSql(
-        'UPDATE Publicacion SET titulo = ?, sinopsis = ?, foto = ?, pdf = ?, id_categoriaFK = ? WHERE id_publicacion = ?;',
-        [titulo, sinopsis, foto, pdf, categoriaFK, idPublicacion]
+        'UPDATE Publicacion SET titulo = ?, sinopsis = ?, fotoPublicacion = ?, pdf = ?, id_categoriaFK = ? WHERE id_publicacion = ?;',
+        [titulo, sinopsis, fotoPublicacion, pdf, categoriaFK, idPublicacion]
       )
       .then(() => {
         console.log('Publicación actualizada correctamente');
@@ -622,7 +622,7 @@ export class DbService {
             titulo: item.titulo,
             sinopsis: item.sinopsis,
             fechaPublicacion: item.fechaPublicacion,
-            foto: item.foto,
+            fotoPublicacion: item.fotoPublicacion,
             pdf: item.pdf,
             estado: item.estado,
             observacion: item.observacion,

@@ -21,7 +21,7 @@ export class RegistrarLibroPage implements OnInit {
     this.publicacionForm = this.fb.group({
       titulo: ['', Validators.required],
       sinopsis: ['', Validators.required],
-      foto: ['', Validators.required],
+      fotoPublicacion: ['', Validators.required],
       pdf: ['', Validators.required],
       categoria: ['', Validators.required],
     
@@ -41,18 +41,9 @@ export class RegistrarLibroPage implements OnInit {
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      this.selectedFile = file;
-      console.log('Archivo PDF seleccionado:', this.selectedFile?.name);
-      this.publicacionForm.patchValue({ pdf: file });
-      this.publicacionForm.get('pdf')?.markAsTouched();  // Marca el campo como tocado
-    } else {
-      console.error('Por favor, selecciona un archivo PDF válido.');
-      this.selectedFile = null;
-      this.publicacionForm.patchValue({ pdf: null });
-      this.publicacionForm.get('pdf')?.markAsTouched();  // Marca el campo como tocado
-    }
-  }
+    this.selectedFile = file;
+    this.publicacionForm.patchValue({ pdf: file });
+  }  
 
   async guardarArchivoPDF(file: File): Promise<string> {
     try {
@@ -83,30 +74,22 @@ export class RegistrarLibroPage implements OnInit {
   }
 
   /* Camara */
-  takePicture = async () => {
+  async takePicture() {
     const image2 = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
       source: CameraSource.Prompt
     });
-    
-    if (image2.dataUrl) {
-      console.log('Imagen capturada:', image2.dataUrl);
-      this.publicacionForm.patchValue({ foto: image2.dataUrl });
-      this.publicacionForm.get('foto')?.markAsTouched();  // Marca el campo como tocado
-    } else {
-      this.publicacionForm.patchValue({ foto: null });
-      this.publicacionForm.get('foto')?.markAsTouched();  // Marca el campo como tocado
-    }
-  };
+    this.publicacionForm.patchValue({ fotoPublicacion: image2.dataUrl });
+  }
   
   async enviar() {
     if (this.publicacionForm.valid && this.selectedFile) {
       const titulo = this.publicacionForm.value.titulo;
       const sinopsis = this.publicacionForm.value.sinopsis;
       const fechaPublicacion = new Date().toLocaleDateString('es-ES');
-      const foto = this.publicacionForm.value.foto;
+      const fotoPublicacion = this.publicacionForm.value.fotoPublicacion;
       const idUsuario = this.auth.getIdUsuario();
       const categoria = this.publicacionForm.value.categoria;
     
@@ -122,7 +105,7 @@ export class RegistrarLibroPage implements OnInit {
           titulo,
           sinopsis,
           fechaPublicacion,
-          foto,
+          fotoPublicacion,
           this.publicacionForm.value.pdf, // Usar la URI del PDF desde el formulario
           idUsuario,
           categoria

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { DbService } from 'src/app/services/db.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-perfil',
@@ -39,7 +40,7 @@ export class PerfilPage implements OnInit {
           Validators.pattern(/^(\d{2}-\d{2}-\d{4})$/),
         ],
       ],
-      foto: ['', Validators.required],
+      foto: [''],
     });
     this.securityForm = this.fb.group(
       {
@@ -84,6 +85,20 @@ export class PerfilPage implements OnInit {
         });
     }
   }
+
+  async takePicture() {
+    const image2 = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: false,
+      resultType: CameraResultType.DataUrl,
+      source: CameraSource.Prompt
+    });
+    this.infoForm.patchValue({ foto: image2.dataUrl });
+  }
+
+  clearPhoto() {
+    this.infoForm.patchValue({ foto: '' });
+  }  
 
   startEdit(type: 'info' | 'security') {
     this.editMode = true;
@@ -142,6 +157,7 @@ export class PerfilPage implements OnInit {
       this.usuario.nombreUsuario = this.infoForm.value.nombreUsuario;
       this.usuario.apellidoUsuario = this.infoForm.value.apellidoUsuario;
       this.usuario.edadUsuario = this.infoForm.value.fechaNacimiento;
+      this.usuario.foto = this.infoForm.value.foto;
 
       // Detecta los cambios entre los valores actuales y originales
       const cambios = this.detectarCambios(this.usuario, this.usuarioOriginal);

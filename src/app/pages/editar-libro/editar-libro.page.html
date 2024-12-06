@@ -50,8 +50,8 @@
           <ion-icon class="img" name="image-outline"></ion-icon>
           <h1>Seleccione una imagen</h1>
         </label>
-        <input (click)="takePicture()" id="file-input" formControlName="foto">
-        <ion-img class="image" [src]="libroForm.value.foto" *ngIf="libroForm.value.foto"></ion-img>
+        <input (click)="takePicture()" id="file-input" formControlName="fotoPublicacion">
+        <ion-img loading="lazy" class="image" [src]="libroForm.value.fotoPublicacion" *ngIf="libroForm.value.fotoPublicacion"></ion-img>
       </ion-item>
 
       <!-- Campo para el PDF del libro -->

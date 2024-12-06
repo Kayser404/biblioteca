@@ -16,8 +16,8 @@
 
   <!-- Tarjeta de perfil del usuario -->
   <ion-card *ngIf="usuario">
-    <ion-card>
-      <ion-img [src]="infoForm.value.foto || 'assets/img/default-book.png'" alt="{{ infoForm.value.nombreUsuario }}"></ion-img>
+    <ion-card *ngIf="!editMode || editType !== 'info'">
+      <ion-img [src]="infoForm.value.foto || 'assets/img/user.jpg'" alt="" loading="lazy"></ion-img>
     </ion-card>
 
     <ion-card-header>
@@ -34,6 +34,20 @@
     <!-- Formulario de información personal -->
     <ion-card-content *ngIf="editMode && editType === 'info'">
       <form [formGroup]="infoForm" (ngSubmit)="saveChanges()">
+        <!-- Campo para la foto del libro -->
+        <ion-item>
+          <label for="file-input" class="disfras">Imagen de Portada
+            <ion-icon class="img" name="image-outline"></ion-icon>
+            <h1>Seleccione una imagen</h1>
+          </label>
+          <input (click)="takePicture()" id="file-input" formControlName="foto">
+          <ion-img loading="lazy" class="image" [src]="infoForm.value.foto" *ngIf="infoForm.value.foto"></ion-img>
+        </ion-item>
+        <!-- Botón para eliminar la foto -->
+        <ion-button expand="block" color="danger" *ngIf="infoForm.value.foto" (click)="clearPhoto()">
+          Eliminar Foto
+        </ion-button>
+
         <!-- Nombre -->
         <ion-item>
           <ion-label position="floating">Nombre</ion-label>
@@ -62,7 +76,7 @@
           {{ getFechaNacimientoMessage() }}
         </ion-text>
         <!-- Botones Guardar y Cancelar -->
-        <ion-button expand="full" type="submit">Guardar Cambios</ion-button>
+        <ion-button [disabled]="infoForm.invalid" expand="full" type="submit">Guardar Cambios</ion-button>
         <ion-button expand="full" color="medium" (click)="cancelEdit()">Cancelar</ion-button>
       </form>
     </ion-card-content>

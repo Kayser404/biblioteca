@@ -24,7 +24,7 @@ export class EditarLibroPage implements OnInit {
     this.libroForm = this.fb.group({
       titulo: ['', Validators.required],
       sinopsis: ['', Validators.required],
-      foto: [''],
+      fotoPublicacion: [''],
       pdf: [''],
       categoriaFK: ['', Validators.required]
     });
@@ -53,18 +53,9 @@ export class EditarLibroPage implements OnInit {
 
   onFileSelected(event: any): void {
     const file = event.target.files[0];
-    if (file && file.type === 'application/pdf') {
-      this.selectedFile = file;
-      console.log('Archivo PDF seleccionado:', this.selectedFile?.name);
-      this.libroForm.patchValue({ pdf: file });
-      this.libroForm.get('pdf')?.markAsTouched();  // Marca el campo como tocado
-    } else {
-      console.error('Por favor, selecciona un archivo PDF válido.');
-      this.selectedFile = null;
-      this.libroForm.patchValue({ pdf: null });
-      this.libroForm.get('pdf')?.markAsTouched();  // Marca el campo como tocado
-    }
-  }
+    this.selectedFile = file;
+    this.libroForm.patchValue({ pdf: file });
+  }  
 
   async guardarArchivoPDF(file: File): Promise<string> {
     try {
@@ -101,12 +92,12 @@ export class EditarLibroPage implements OnInit {
       resultType: CameraResultType.DataUrl,
       source: CameraSource.Prompt
     });
-    this.libroForm.patchValue({ foto: image2.dataUrl });
+    this.libroForm.patchValue({ fotoPublicacion: image2.dataUrl });
   }
 
   async guardarCambios() {
     if (this.libroForm.valid) {
-      const { titulo, sinopsis, foto, categoriaFK } = this.libroForm.value;
+      const { titulo, sinopsis, fotoPublicacion, categoriaFK } = this.libroForm.value;
       const idPublicacion = this.libro.idPublicacion;
   
       try {
@@ -122,7 +113,7 @@ export class EditarLibroPage implements OnInit {
         await this.db.actualizarPublicacion(
           titulo,
           sinopsis,
-          foto,
+          fotoPublicacion,
           pdfUri, // Pasa la URI del PDF
           categoriaFK,
           idPublicacion

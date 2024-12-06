@@ -17,6 +17,7 @@
       </label>
       <input (click)="takePicture()" id="file-input" formControlName="foto" />
       <ion-img
+        loading="lazy"
         class="image"
         [src]="registroForm.value.foto"
         *ngIf="registroForm.value.foto"

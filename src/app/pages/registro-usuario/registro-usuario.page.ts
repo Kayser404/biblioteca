@@ -43,7 +43,7 @@ export class RegistroUsuarioPage implements OnInit {
         this.edadMayor,
         Validators.pattern(/^(\d{2}-\d{2}-\d{4})$/)
       ]],
-      foto: ['', Validators.required],
+      foto: [''],
       pregunta: ['', Validators.required],
       respuesta: ['', Validators.required],
     }, { validator: this.passwordsMatchValidator });    

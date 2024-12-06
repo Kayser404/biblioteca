@@ -19,6 +19,8 @@ export class DetalleLibroPage implements OnInit, OnDestroy {
     apellidoAutor: '',
     sinopsis: '',
     fechaPublicacion: '',
+    foto: '',
+    pdf: '',
     categoriaFK: '',
     usuarioFK: null,
     observacion: '',
@@ -146,6 +148,7 @@ cargarDatos() {
   async eliminarPublicacion(publicacion: Publicacion) {
     await this.db.eliminarPublicacionPorId(Number(publicacion.idPublicacion));
     this.db.buscarPublicacion(); // Refrescar la lista
+    this.router.navigate(['/lista-libro']);
   }
 
    // Método para alternar entre agregar y eliminar de favoritos
@@ -199,6 +202,10 @@ cargarDatos() {
       observacion
     );
     this.db.buscarPublicacion(); // Refrescar la lista
+    // Navegar con un mensaje como parámetro
+    this.router.navigate(['/admin-publicaciones'], {
+      queryParams: { mensaje: 'Publicación aprobada exitosamente' }
+    });
   }
 
   // Rechazar una publicación
@@ -211,6 +218,10 @@ cargarDatos() {
       observacion
     );
     this.db.buscarPublicacion(); // Refrescar la lista
+    // Navegar con un mensaje de rechazo
+    this.router.navigate(['/admin-publicaciones'], {
+      queryParams: { mensaje: 'Publicación rechazada exitosamente' }
+    });
   }
   
 }

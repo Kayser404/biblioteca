@@ -1,53 +1,69 @@
 <app-sidebar></app-sidebar>
-<ion-content>
-  <ion-content class="ion-padding">
-    <div class="catalog-container">
-      <!-- Mostrar el chiste -->
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>Chiste del día</ion-card-title>
-        </ion-card-header>
+<ion-content class="ion-padding">
+  <div class="catalog-container">
 
-        <ion-card-content>
-          <p>{{ joke }}</p>
-          <!-- Muestra el chiste aquí -->
-        </ion-card-content>
+    <!-- Skeleton para el chiste del día -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Chiste del día</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p *ngIf="joke; else jokeSkeleton">{{ joke }}</p>
+        <ng-template #jokeSkeleton>
+          <ion-skeleton-text animated style="width: 100%; height: 20px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 80%; height: 20px;"></ion-skeleton-text>
+        </ng-template>
+      </ion-card-content>
+      <ion-button expand="block" color="primary" (click)="refreshJoke()">
+        Ver otro chiste
+      </ion-button>
+    </ion-card>
 
-        <!-- Botón para ver más chistes (puedes cambiarlo para cargar otro chiste) -->
-        <ion-button expand="block" color="primary" (click)="ngOnInit()">
-          Ver otro chiste
-        </ion-button>
-      </ion-card>
-      <ion-grid>
-        <ion-row>
-          <ng-container *ngFor="let libro of libros">
-            <ion-col *ngIf="libro.estado === 'aprobado'" size="12" size-md="6" size-lg="4">
-              <ion-card>
-                <!-- Imagen del libro -->
-                <img [src]="libro.foto" alt="Portada de {{ libro.titulo }}" class="book-cover" />
+    <!-- Skeleton para los libros -->
+    <ion-grid>
+      <ion-row>
+        <!-- Skeleton mientras los libros cargan -->
+        <ng-container *ngIf="!libros.length">
+          <ion-col size="12" size-md="6" size-lg="4" *ngFor="let i of [1, 2, 3, 4]">
+            <ion-card>
+              <ion-skeleton-text animated style="width: 100%; height: 150px;"></ion-skeleton-text>
+              <ion-card-header>
+                <ion-card-title>
+                  <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+                </ion-card-title>
+                <ion-card-subtitle>
+                  <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+                </ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-skeleton-text animated style="width: 100%; height: 50px;"></ion-skeleton-text>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ng-container>
 
-                <!-- Información del libro -->
-                <ion-card-header>
-                  <ion-card-title>{{ libro.titulo }}</ion-card-title>
-                  <ion-card-subtitle>Autor: {{ libro.nombreAutor }} {{ libro.apellidoAutor
-                    }}</ion-card-subtitle>
-                  <ion-card-subtitle>Categoría: {{ libro.categoriaFK }}</ion-card-subtitle>
-                </ion-card-header>
-
-                <!-- Sinopsis -->
-                <ion-card-content>
-                  <p>{{ libro.sinopsis | slice: 0: 100 }}...</p>
-                </ion-card-content>
-
-                <!-- Botón para ver más -->
-                <ion-button expand="block" color="primary" (click)="verDetalles(libro)">
-                  Ver más
-                </ion-button>
-              </ion-card>
-            </ion-col>
-          </ng-container>
-        </ion-row>
-      </ion-grid>
-    </div>
-  </ion-content>
+        <!-- Mostrar libros reales -->
+        <ng-container *ngFor="let libro of libros">
+          <ion-col size="12" size-md="6" size-lg="4">
+            <ion-card>
+              <img loading="lazy" [src]="libro.fotoPublicacion" alt="Portada de {{ libro.titulo }}" />
+              <ion-card-header>
+                <ion-card-title>{{ libro.titulo }}</ion-card-title>
+                <ion-card-subtitle>Autor: {{ libro.nombreAutor }} {{ libro.apellidoAutor }}</ion-card-subtitle>
+                <ion-card-subtitle>Categoría: {{ libro.categoriaFK }}</ion-card-subtitle>
+              </ion-card-header>
+              <ion-card-content>
+                <p>{{ libro.sinopsis | slice: 0: 100 }}...</p>
+              </ion-card-content>
+              <ion-button expand="block" color="primary" (click)="verDetalles(libro)">
+                Ver más
+              </ion-button>
+            </ion-card>
+          </ion-col>
+        </ng-container>
+      </ion-row>
+    </ion-grid>
+  </div>
 </ion-content>
+
+

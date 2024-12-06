@@ -10,19 +10,20 @@
 <ion-content [fullscreen]="true">
   <!-- Imagen del libro -->
   <ion-card>
-    <ion-img [src]="libro.foto || 'assets/img/default-book.png'" alt="{{ libro.titulo }}"></ion-img>
+    <ion-img loading="lazy" [src]="libro.fotoPublicacion" alt="{{ libro.titulo }}"></ion-img>
   </ion-card>
 
   <!-- Detalles del libro -->
   <ion-card>
     <div>
-      <p><strong>Autor: </strong> {{ libro.nombreAutor }} {{ libro.apellidoAutor }}<p>
+      <p><strong>Autor: </strong> {{ libro.nombreAutor }} {{ libro.apellidoAutor }}
+      <p>
       <p><strong>Sinopsis:</strong> {{ libro.sinopsis }}</p>
       <p><strong>Fecha de Publicación:</strong> {{ libro.fechaPublicacion }}</p>
       <p><strong>Categoría:</strong> {{ libro.categoriaFK }}</p>
       @if (idUsuario == libro.usuarioFK) {
-        <p><strong>Observación:</strong> {{ libro.observacion }}</p>
-        <p><strong>Estado:</strong> {{ libro.estado }}</p>
+      <p><strong>Observación:</strong> {{ libro.observacion }}</p>
+      <p><strong>Estado:</strong> {{ libro.estado }}</p>
       }
     </div>
 
@@ -51,33 +52,34 @@
     </ion-button>
     }
   </ion-card>
-  
+
   <!-- Formulario para dejar observación, solo para administradores -->
-  @if (isAdmin && idUsuario != libro.usuarioFK) {
-    <ion-card>
-      <form [formGroup]="observacionForm">
-        <ion-item>
-          <ion-label position="floating">Observación</ion-label>
-          <ion-textarea formControlName="observacion" required>
-            Observación o comentario para esta publicación.
-          </ion-textarea>
-        </ion-item>
-  
-        <!-- Botones para aprobar y rechazar publicación -->
-        <ion-button expand="block" color="secondary" type="submit" [disabled]="!observacionForm.valid"
-          (click)="aprobarPublicacion(libro)">
-          Aprobar
-        </ion-button>
-  
-        <ion-button expand="block" color="danger" type="submit" [disabled]="!observacionForm.valid"
-          (click)="rechazarPublicacion(libro)">
-          Rechazar
-        </ion-button>
-      </form>
-    </ion-card>
-    }
+  @if (isAdmin && idUsuario != libro.usuarioFK && libro.estado !== 'aprobado') {
+  <ion-card>
+    <form [formGroup]="observacionForm">
+      <ion-item>
+        <ion-label position="floating">Observación</ion-label>
+        <ion-textarea formControlName="observacion" required>
+          Observación o comentario para esta publicación.
+        </ion-textarea>
+      </ion-item>
+
+      <!-- Botones para aprobar y rechazar publicación -->
+      <ion-button expand="block" color="secondary" type="submit" [disabled]="!observacionForm.valid"
+        (click)="aprobarPublicacion(libro)">
+        Aprobar
+      </ion-button>
+
+      <ion-button expand="block" color="danger" type="submit" [disabled]="!observacionForm.valid"
+        (click)="rechazarPublicacion(libro)">
+        Rechazar
+      </ion-button>
+    </form>
+  </ion-card>
+  }
 
   <!-- Comentarios fuera de la carta de detalles del libro -->
+  @if (libro.estado == 'aprobado') {
   <ion-card>
     <ion-card-header>
       <ion-card-title>Comentarios y Calificaciones</ion-card-title>
@@ -116,5 +118,5 @@
       </div>
     </ion-card-content>
   </ion-card>
-
+  }
 </ion-content>

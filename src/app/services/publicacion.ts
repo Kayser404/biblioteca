@@ -4,7 +4,7 @@ export class Publicacion {
     titulo = "";
     sinopsis = "";
     fechaPublicacion = "";
-    foto = "";
+    fotoPublicacion = "";
     pdf = "";
     estado = "";
     observacion ="";

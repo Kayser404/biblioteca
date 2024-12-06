@@ -11,6 +11,8 @@ import { ApiService } from 'src/app/services/api.service';
 export class HomePage implements OnInit {
   libros: any[] = [];
   joke: string = '';
+  loadingBooks: boolean = true; // Estado para libros
+  loadingJoke: boolean = true; // Estado para el chiste
 
   constructor(
     private db: DbService,
@@ -19,28 +21,41 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.loadBooks();
+    this.loadJoke();
+  }
+
+  loadBooks() {
     this.db.dbState().subscribe((res) => {
       if (res) {
-        this.db.fetchPublicaciones().subscribe((item) => {
-          this.libros = item;
+        this.db.fetchPublicaciones().subscribe((items) => {
+          this.libros = items.filter((libro) => libro.estado === 'aprobado');;
+    
         });
       }
     });
+  }
 
-    // Obtener un chiste aleatorio en español
+  loadJoke() {
     this.rest.getRandomJoke().subscribe(
       (data) => {
-        console.log('Chiste obtenido:', data);  // Verifica los datos recibidos
         if (data.type === 'single') {
-          this.joke = data.joke;  // Si el chiste es de una sola parte
+          this.joke = data.joke;
         } else {
-          this.joke = `${data.setup} - ${data.delivery}`;  // Si el chiste tiene pregunta y respuesta
+          this.joke = `${data.setup} - ${data.delivery}`;
         }
+        this.loadingJoke = false; // El chiste se ha cargado
       },
       (error) => {
         console.error('Error al obtener el chiste:', error);
+        this.loadingJoke = false; // Termina el estado de carga incluso con error
       }
     );
+  }
+
+  refreshJoke() {
+    this.loadingJoke = true;
+    this.loadJoke();
   }
 
   verDetalles(libro: any) {
