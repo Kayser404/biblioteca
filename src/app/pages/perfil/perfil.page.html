@@ -22,13 +22,14 @@
 
     <ion-card-header>
       <ion-card-title>{{ infoForm.value.nombreUsuario }} {{ infoForm.value.apellidoUsuario }}</ion-card-title>
-      <ion-card-subtitle>{{ securityForm.value.email }}</ion-card-subtitle>
+      <ion-card-subtitle>{{ emailForm.value.email }}</ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content *ngIf="!editMode">
       <p><strong>Fecha de nacimiento:</strong> {{ infoForm.value.fechaNacimiento }}</p>
       <ion-button (click)="startEdit('info')" expand="block" color="primary">Editar Información</ion-button>
-      <ion-button (click)="startEdit('security')" expand="block" color="secondary">Editar Seguridad</ion-button>
+      <ion-button (click)="startEdit('email')" expand="block" color="secondary">Editar Email</ion-button>
+      <ion-button (click)="startEdit('password')" expand="block" color="secondary">Editar Contraseña</ion-button>
     </ion-card-content>
 
     <!-- Formulario de información personal -->
@@ -81,49 +82,64 @@
       </form>
     </ion-card-content>
 
-    <!-- Formulario de seguridad -->
-    <ion-card-content *ngIf="editMode && editType === 'security'">
-      <form [formGroup]="securityForm" (ngSubmit)="saveSecurityChanges()">
+    <!-- Formularios de seguridad -->
+    <ion-card-content *ngIf="editMode && editType === 'email'">
+      <form [formGroup]="emailForm" (ngSubmit)="saveEmailChanges()">
+        <!-- Email -->
+        <ion-item>
+          <ion-label position="floating">Nuevo Email</ion-label>
+          <ion-input formControlName="email" type="email"></ion-input>
+        </ion-item>
+        <ion-text color="danger" *ngIf="emailForm.get('email')?.invalid && emailForm.get('email')?.touched">
+          {{ getEmailMessage() }}
+        </ion-text>
+    
         <!-- Contraseña Actual -->
         <ion-item>
           <ion-label position="floating">Contraseña Actual</ion-label>
-          <ion-input formControlName="currentPassword" type="password" required></ion-input>
+          <ion-input formControlName="currentPassword" type="password"></ion-input>
         </ion-item>
         <ion-text *ngIf="errorMessages.password" color="danger">{{ errorMessages.password }}</ion-text>
+    
+        <!-- Botones -->
+        <ion-button [disabled]="emailForm.invalid" expand="full" type="submit">Guardar Email</ion-button>
+        <ion-button expand="full" color="medium" (click)="cancelEdit()">Cancelar</ion-button>
+      </form>
+    </ion-card-content>
 
-        <!-- Email -->
-        <ion-item>
-          <ion-label position="floating">Email</ion-label>
-          <ion-input formControlName="email" type="email"></ion-input>
-        </ion-item>
-        <ion-text color="danger" *ngIf="securityForm.get('email')?.invalid && securityForm.get('email')?.touched">
-          {{ getEmailMessage() }}
-        </ion-text>
-
+    <ion-card-content *ngIf="editMode && editType === 'password'">
+      <form [formGroup]="passwordForm" (ngSubmit)="savePasswordChanges()">
         <!-- Nueva Contraseña -->
         <ion-item>
           <ion-label position="floating">Nueva Contraseña</ion-label>
           <ion-input formControlName="newPassword" type="password"></ion-input>
         </ion-item>
-        <ion-text color="danger" *ngIf="securityForm.get('newPassword')?.invalid && securityForm.get('newPassword')?.touched">
+        <ion-text color="danger" *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
           {{ getContrasenaMessage() }}
         </ion-text>
-
+    
         <!-- Repetir Contraseña -->
         <ion-item>
           <ion-label position="floating">Repetir Contraseña</ion-label>
           <ion-input formControlName="repPassword" type="password"></ion-input>
         </ion-item>
         <ion-text color="danger"
-          *ngIf="securityForm.hasError('passwordsMismatch') && securityForm.get('repPassword')?.touched">
+          *ngIf="passwordForm.hasError('passwordsMismatch') && passwordForm.get('repPassword')?.touched">
           Las contraseñas no coinciden.
         </ion-text>
-
+    
+        <!-- Contraseña Actual -->
+        <ion-item>
+          <ion-label position="floating">Contraseña Actual</ion-label>
+          <ion-input formControlName="currentPassword" type="password"></ion-input>
+        </ion-item>
+        <ion-text *ngIf="errorMessages.password" color="danger">{{ errorMessages.password }}</ion-text>
+    
         <!-- Botones -->
-        <ion-button expand="full" type="submit">Guardar Cambios</ion-button>
+        <ion-button [disabled]="passwordForm.invalid" expand="full" type="submit">Guardar Contraseña</ion-button>
         <ion-button expand="full" color="medium" (click)="cancelEdit()">Cancelar</ion-button>
       </form>
     </ion-card-content>
-
+    
   </ion-card>
 </ion-content>

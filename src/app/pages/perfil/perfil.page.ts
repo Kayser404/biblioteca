@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { DbService } from 'src/app/services/db.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-perfil',
@@ -13,9 +14,10 @@ export class PerfilPage implements OnInit {
   usuario: any;
   usuarioOriginal: any; // Variable para almacenar los datos originales
   editMode: boolean = false;
-  editType: 'info' | 'security' = 'info';
+  editType: 'info' | 'email' | 'password' | null = null;
   infoForm: FormGroup;
-  securityForm: FormGroup;
+  emailForm: FormGroup;
+  passwordForm: FormGroup;
   errorMessages: { password: string } = { password: '' };
 
   constructor(
@@ -42,10 +44,18 @@ export class PerfilPage implements OnInit {
       ],
       foto: [''],
     });
-    this.securityForm = this.fb.group(
+    // Formulario para cambiar email
+    this.emailForm = this.fb.group({
+      email: [
+        '',
+        [Validators.required, Validators.email], // Validadores síncronos
+        [this.emailValidator(this.db, this.auth.getIdUsuario())], // Validador asíncrono
+      ],
+      currentPassword: ['', [Validators.required]],
+    });
+    // Formulario para cambiar contraseña
+    this.passwordForm = this.fb.group(
       {
-        email: ['', [Validators.required, Validators.email]],
-        currentPassword: ['', [Validators.required]],
         newPassword: [
           '',
           [
@@ -57,7 +67,8 @@ export class PerfilPage implements OnInit {
             ),
           ],
         ],
-        repPassword: ['', Validators.required],
+        repPassword: ['', [Validators.required]],
+        currentPassword: ['', [Validators.required]],
       },
       { validator: this.passwordsMatchValidator }
     );
@@ -77,7 +88,7 @@ export class PerfilPage implements OnInit {
             fechaNacimiento: usuario.edadUsuario,
             foto: usuario.foto,
           });
-          this.securityForm.patchValue({ email: usuario.email });
+          this.emailForm.patchValue({ email: usuario.email });
           console.log('Datos del usuario cargados:', this.usuario);
         })
         .catch((error: any) => {
@@ -86,29 +97,84 @@ export class PerfilPage implements OnInit {
     }
   }
 
+  emailValidator(db: DbService, idUsuarioActual: string | null) {
+    return async (control: AbstractControl) => {
+      const email = control.value;
+
+      if (!email) {
+        return null; // Si el campo está vacío, no validar
+      }
+
+      try {
+        const res = await db.verificarEmailExistente(email);
+        if (res.rows.length > 0) {
+          const usuarioId = res.rows.item(0).id_usuario;
+          if (usuarioId !== idUsuarioActual) {
+            // El email pertenece a otro usuario
+            return { emailExistente: true };
+          }
+        }
+        return null; // Email válido
+      } catch (error) {
+        console.error('Error al verificar el email:', error);
+        return { errorVerificandoEmail: true }; // Error inesperado
+      }
+    };
+  }
+
   async takePicture() {
     const image2 = await Camera.getPhoto({
       quality: 90,
       allowEditing: false,
       resultType: CameraResultType.DataUrl,
-      source: CameraSource.Prompt
+      source: CameraSource.Prompt,
     });
     this.infoForm.patchValue({ foto: image2.dataUrl });
   }
 
   clearPhoto() {
     this.infoForm.patchValue({ foto: '' });
-  }  
+  }
 
-  startEdit(type: 'info' | 'security') {
+  startEdit(type: 'info' | 'email' | 'password') {
     this.editMode = true;
     this.editType = type;
+
+    if (type === 'info') {
+      this.infoForm.reset(this.usuario);
+    } else if (type === 'email') {
+      this.emailForm.reset({
+        email: this.usuario.email,
+        currentPassword: '',
+      });
+    } else if (type === 'password') {
+      this.passwordForm.reset({
+        newPassword: '',
+        repPassword: '',
+        currentPassword: '',
+      });
+    }
   }
 
   cancelEdit() {
     this.editMode = false;
-    this.infoForm.reset(this.usuario);
-    this.securityForm.reset(this.usuario);
+
+    if (this.editType === 'info') {
+      this.infoForm.reset(this.usuario); // Resetea únicamente el formulario de información
+    } else if (this.editType === 'email') {
+      this.emailForm.reset({
+        email: this.usuario.email,
+        currentPassword: '', // Contraseña actual vacía
+      }); // Resetea únicamente el formulario de email
+    } else if (this.editType === 'password') {
+      this.passwordForm.reset({
+        newPassword: '',
+        repPassword: '',
+        currentPassword: '', // Contraseña actual vacía
+      }); // Resetea únicamente el formulario de contraseña
+    }
+
+    this.editType = null; // Limpia el tipo de edición activo
   }
 
   verificarContraseñaActual(currentPassword: string): Promise<boolean> {
@@ -118,12 +184,11 @@ export class PerfilPage implements OnInit {
     });
   }
 
-  saveSecurityChanges() {
+  saveEmailChanges() {
     if (this.usuario) {
       // Actualiza el objeto usuario con los valores del formulario
-      this.usuario.email = this.securityForm.value.email;
-      this.usuario.password = this.securityForm.value.newPassword;
-      const currentPassword = this.securityForm.value.currentPassword;
+      this.usuario.email = this.emailForm.value.email;
+      const currentPassword = this.emailForm.value.currentPassword;
 
       // Detecta los cambios entre los valores actuales y originales
       const cambios = this.detectarCambios(this.usuario, this.usuarioOriginal);
@@ -134,13 +199,41 @@ export class PerfilPage implements OnInit {
             this.db
               .actualizarUsuario(this.usuario, cambios)
               .then(() => {
-                console.log('Perfil actualizado correctamente.');
                 this.editMode = false; // Salir del modo de edición después de guardar
-                this.usuarioOriginal = { ...this.usuario };
+
+                // Después de guardar, actualizamos el objeto usuarioOriginal para futuras comparaciones
+                this.usuarioOriginal = { ...this.usuario }; // Clonamos los valores actuales como los valores originales
               })
-              .catch((error: any) => {
-                console.error('Error al actualizar el perfil:', error);
-              });
+          } else {
+            this.errorMessages.password = 'contraseña incorrecta';
+          }
+        });
+      } else {
+        console.log('No se han realizado cambios en el perfil.');
+      }
+    }
+  }
+
+  savePasswordChanges() {
+    if (this.usuario) {
+      // Actualiza el objeto usuario con los valores del formulario
+      this.usuario.password = this.passwordForm.value.newPassword;
+      const currentPassword = this.passwordForm.value.currentPassword;
+
+      // Detecta los cambios entre los valores actuales y originales
+      const cambios = this.detectarCambios(this.usuario, this.usuarioOriginal);
+
+      if (cambios.length > 0) {
+        this.verificarContraseñaActual(currentPassword).then((esValido) => {
+          if (esValido) {
+            this.db
+              .actualizarUsuario(this.usuario, cambios)
+              .then(() => {
+                this.editMode = false; // Salir del modo de edición después de guardar
+
+                // Después de guardar, actualizamos el objeto usuarioOriginal para futuras comparaciones
+                this.usuarioOriginal = { ...this.usuario }; // Clonamos los valores actuales como los valores originales
+              })
           } else {
             this.errorMessages.password = 'contraseña incorrecta';
           }
@@ -193,10 +286,14 @@ export class PerfilPage implements OnInit {
     return cambios;
   }
 
-  passwordsMatchValidator(form: FormGroup) {
-    const newPassword = form.get('newPassword')?.value;
-    const repPassword = form.get('repPassword')?.value;
-    return newPassword === repPassword ? null : { passwordsMismatch: true };
+  passwordsMatchValidator(group: FormGroup): { [key: string]: boolean } | null {
+    const newPassword = group.get('newPassword')?.value;
+    const repPassword = group.get('repPassword')?.value;
+
+    if (newPassword && repPassword && newPassword !== repPassword) {
+      return { passwordsMismatch: true };
+    }
+    return null;
   }
 
   // Validación Fecha de Nacimiento
@@ -244,7 +341,7 @@ export class PerfilPage implements OnInit {
   }
 
   getEmailMessage() {
-    const emailControl = this.securityForm.controls['email'];
+    const emailControl = this.emailForm.controls['email'];
 
     if (emailControl.hasError('required')) {
       return 'Este campo es requerido.';
@@ -254,6 +351,9 @@ export class PerfilPage implements OnInit {
     }
     if (emailControl.hasError('pattern')) {
       return 'Formato de email inválido.';
+    }
+    if (emailControl.hasError('emailExistente')) {
+      return 'Este email ya está en uso.';
     }
     return '';
   }
@@ -286,7 +386,7 @@ export class PerfilPage implements OnInit {
 
   // Validación Contraseña
   getContrasenaMessage() {
-    const contrasenaControl = this.securityForm.controls['newPassword'];
+    const contrasenaControl = this.passwordForm.controls['newPassword'];
 
     if (contrasenaControl.hasError('required')) {
       return 'Este campo es requerido.';
@@ -307,7 +407,7 @@ export class PerfilPage implements OnInit {
 
   // Validación Repetir Contraseña
   getRepetirContrasenaMessage() {
-    const repPasswordControl = this.securityForm.get('repPassword');
+    const repPasswordControl = this.passwordForm.get('repPassword');
     if (repPasswordControl?.hasError('required')) {
       return 'Debes confirmar la contraseña.';
     }
