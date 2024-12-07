@@ -3,9 +3,9 @@
   <h1 class="page-title">Iniciar Sesión</h1>
 
   <!-- Logo -->
-  <div class="logo-container">
+  <!-- <div class="logo-container">
     <ion-img loading="lazy" src="../../../assets/img/darklit.png" alt="Logo" class="logo"></ion-img>
-  </div>
+  </div> -->
 
   <!-- Formulario de inicio de sesión -->
   <form [formGroup]="loginForm" (ngSubmit)="login()" class="form-container">
@@ -14,7 +14,7 @@
       <ion-input type="email" formControlName="email"></ion-input>
     </ion-item>
     <ion-text *ngIf="loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)" color="danger">
-      Correo inválido
+      
     </ion-text>
     <ion-text *ngIf="errorMessages.email" color="danger">{{ errorMessages.email }}</ion-text>
 
@@ -23,7 +23,7 @@
       <ion-input type="password" formControlName="password"></ion-input>
     </ion-item>
     <ion-text *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)" color="danger">
-      Contraseña inválida
+      
     </ion-text>
     <ion-text *ngIf="errorMessages.password" color="danger">{{ errorMessages.password }}</ion-text>
 

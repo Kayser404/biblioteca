@@ -37,7 +37,7 @@
       <form [formGroup]="infoForm" (ngSubmit)="saveChanges()">
         <!-- Campo para la foto del libro -->
         <ion-item>
-          <label for="file-input" class="disfras">Imagen de Portada
+          <label for="file-input" class="disfras">Imagen de Perfil
             <ion-icon class="img" name="image-outline"></ion-icon>
             <h1>Seleccione una imagen</h1>
           </label>
@@ -70,7 +70,7 @@
         <!-- Fecha de Nacimiento -->
         <ion-item>
           <ion-label position="floating">Fecha de Nacimiento</ion-label>
-          <ion-input placeholder="DD-MM-AAAA" type="text" formControlName="fechaNacimiento"></ion-input>
+          <ion-input placeholder="DD-MM-AAAA" type="any" formControlName="fechaNacimiento"></ion-input>
         </ion-item>
         <ion-text color="danger"
           *ngIf="infoForm.get('fechaNacimiento')?.invalid && infoForm.get('fechaNacimiento')?.touched">

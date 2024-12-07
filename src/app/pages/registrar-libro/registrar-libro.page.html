@@ -43,7 +43,7 @@
         *ngIf="publicacionForm.value.fotoPublicacion"
       ></ion-img>
     </ion-item>
-    <div><ion-text color="danger">La imagen es obligatoria</ion-text></div>
+    
     <div *ngIf="publicacionForm.get('fotoPublicacion')?.invalid && (publicacionForm.get('fotoPublicacion')?.touched || publicacionForm.get('fotoPublicacion')?.dirty)">
       <ion-text color="danger">La imagen es obligatoria</ion-text>
     </div>

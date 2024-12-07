@@ -6,6 +6,16 @@
   color: #FFC107; /* Amarillo cálido */
 }
 
+/* Fondo de la página */
+ion-content.login-background {
+  --background: none; /* Remueve el fondo predeterminado de Ionic */
+  background-image: url('../../../assets/textures/paper-texture.jpg'); /* Ruta de tu imagen */
+  background-size: cover; /* Ajusta la imagen para cubrir toda la pantalla */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-position: center; /* Centra la imagen */
+  min-height: 100vh; /* Asegura que cubra toda la pantalla */
+}
+
 /* Título de la página */
 .page-title {
   text-align: center;
@@ -13,6 +23,7 @@
   font-weight: bold;
   color: #444; /* Gris oscuro */
   margin: 20px 0;
+  margin-top: 100px
 }
 
 /* Contenedor del logo */
@@ -32,9 +43,11 @@
 
 /* Estilos del formulario */
 .form-container {
+  border-radius: 25px;
   display: flex;
   flex-direction: column;
   gap: 10px; /* Espaciado entre elementos */
+  margin-top: 100px;
 }
 
 /* Botón de inicio de sesión */
@@ -64,4 +77,18 @@
 ion-text[color="danger"] {
   font-size: 0.85rem;
   margin-top: 5px;
+}
+
+ion-item {
+  --padding-start: 15px;
+  --padding-end: 15px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+ion-input:focus, ion-textarea:focus {
+  border-color: #FFC107; /* Amarillo cálido */
+  box-shadow: 0px 4px 10px rgba(255, 193, 7, 0.2); /* Resaltado */
 }

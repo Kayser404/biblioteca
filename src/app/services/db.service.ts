@@ -221,7 +221,7 @@ export class DbService {
         // Verificar si la inserción tuvo éxito
         if (res.rowsAffected > 0) {
           // La inserción tuvo éxito, muestra alerta de éxito
-          await this.presentAlert('La inserción fue exitosa');
+          await this.presentAlert('Creacion de cuenta fue exitosa');
           const idUsuario = res.insertId;
           this.buscarUsuario(); // Si tienes una función para buscar usuarios
           return idUsuario;

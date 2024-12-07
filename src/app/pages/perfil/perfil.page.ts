@@ -296,7 +296,7 @@ export class PerfilPage implements OnInit {
     return null;
   }
 
-  // Validación Fecha de Nacimiento
+  // Validación personalizada
   edadMayor(control: any) {
     const fechaNacimiento = control.value;
     if (!fechaNacimiento) {
@@ -304,17 +304,37 @@ export class PerfilPage implements OnInit {
     }
 
     const partesFecha = fechaNacimiento.split('-');
+    if (partesFecha.length !== 3) {
+      return { formatoInvalido: true }; // Formato incorrecto
+    }
+
     const dia = parseInt(partesFecha[0], 10);
-    const mes = parseInt(partesFecha[1], 10) - 1;
+    const mes = parseInt(partesFecha[1], 10);
     const anio = parseInt(partesFecha[2], 10);
 
-    const fechaNac = new Date(anio, mes, dia);
+    if (isNaN(dia) || isNaN(mes) || isNaN(anio)) {
+      return { formatoInvalido: true };
+    }
+
+    if (mes < 1 || mes > 12) {
+      return { mesInvalido: true };
+    }
+
+    const fechaNac = new Date(anio, mes - 1, dia);
+    if (
+      fechaNac.getFullYear() !== anio ||
+      fechaNac.getMonth() !== mes - 1 ||
+      fechaNac.getDate() !== dia
+    ) {
+      return { fechaInvalida: true };
+    }
+
     const hoy = new Date();
     let edad = hoy.getFullYear() - fechaNac.getFullYear();
 
     if (
-      hoy.getMonth() + 1 < mes ||
-      (hoy.getMonth() + 1 === mes && hoy.getDate() < dia)
+      hoy.getMonth() < fechaNac.getMonth() ||
+      (hoy.getMonth() === fechaNac.getMonth() && hoy.getDate() < fechaNac.getDate())
     ) {
       edad--;
     }
@@ -322,19 +342,29 @@ export class PerfilPage implements OnInit {
     if (edad < 18) {
       return { edadMenor: true };
     }
-    return null;
+
+    return null; // Válido
   }
 
   getFechaNacimientoMessage() {
-    const fechaNacimientoControl = this.infoForm.controls['fechaNacimiento'];
+    const fechaNacimientoControl = this.infoForm.get('fechaNacimiento');
 
-    if (fechaNacimientoControl.hasError('required')) {
+    if (fechaNacimientoControl?.hasError('required')) {
       return 'Este campo es requerido.';
     }
-    if (fechaNacimientoControl.hasError('pattern')) {
-      return 'El formato de la fecha de nacimiento debe ser DD-MM-AAAA.';
+    if (fechaNacimientoControl?.hasError('pattern')) {
+      return 'El formato de la fecha debe ser DD-MM-AAAA.';
     }
-    if (fechaNacimientoControl.hasError('edadMenor')) {
+    if (fechaNacimientoControl?.hasError('formatoInvalido')) {
+      return 'La fecha tiene un formato incorrecto.';
+    }
+    if (fechaNacimientoControl?.hasError('mesInvalido')) {
+      return 'El mes debe estar entre 1 y 12.';
+    }
+    if (fechaNacimientoControl?.hasError('fechaInvalida')) {
+      return 'La fecha no es válida.';
+    }
+    if (fechaNacimientoControl?.hasError('edadMenor')) {
       return 'Debes ser mayor de 18 años.';
     }
     return '';

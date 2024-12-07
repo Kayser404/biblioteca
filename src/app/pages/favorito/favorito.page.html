@@ -11,7 +11,7 @@
   <ion-list>
     <ion-item *ngFor="let libro of publicacionesFavoritas">
       <ion-thumbnail slot="start">
-        <img loading="lazy" [src]="libro.fotoPublicacion || 'assets/img/default-book.png'" alt="{{ libro.titulo }}">
+        <img loading="lazy" [src]="libro.fotoPublicacion" alt="{{ libro.titulo }}">
       </ion-thumbnail>
       
       <ion-label>

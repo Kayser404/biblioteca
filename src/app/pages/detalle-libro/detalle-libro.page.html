@@ -44,7 +44,7 @@
     <ion-button expand="block" color="danger" (click)="eliminarPublicacion(libro)">
       Eliminar
     </ion-button>
-    } @else {
+    } @else if (libro.estado == 'aprobado') {
     <!-- Botón para agregar o quitar de favoritos -->
     <ion-button expand="block" color="secondary" (click)="toggleFavorito()">
       <ion-icon slot="start" [name]="esFavorito ? 'heart' : 'heart-outline'"></ion-icon>

@@ -16,16 +16,3 @@
   --button-border-radius: 6px;
   --button-hover-color: #f2f2f2;
 }
-
-body.dark {
-  /* Tema oscuro */
-  --ion-color-primary: #D2B48C; /* Beige claro como color primario */
-  --ion-color-secondary: #8B4513; /* Marrón madera */
-  --ion-color-tertiary: #FFF8E7; /* Blanco cálido */
-  --ion-color-light: #333333; /* Gris oscuro */
-  --ion-color-dark: #ffffff; /* Blanco para texto en modo oscuro */
-
-  /* Fondos y texto */
-  --ion-background-color: #000000; /* Fondo oscuro */
-  --ion-text-color: #ffffff; /* Texto blanco para modo oscuro */
-}
